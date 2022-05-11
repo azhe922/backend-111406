@@ -1,14 +1,14 @@
+import os
+from flask import Flask, jsonify
+from api.user_api import user_route
 
-import flask
+app = Flask(__name__)
 
-app = flask.Flask(__name__)
-
-
-@app.get("/")
-def hello():
-    """Return a friendly HTTP greeting."""
-    return "Hello World!\n"
+app.register_blueprint(user_route)
 
 
-if __name__ == "__main__":
-    app.run(host="localhost", port=8080, debug=True)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
