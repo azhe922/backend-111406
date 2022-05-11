@@ -1,5 +1,35 @@
 from model.user import User
 from flask import make_response
+from utils.passwordEncryption import encrypt_password
+import datetime
+
+
+def signup_service(userdata):
+    try:
+        user_id_check = User.objects[:1](user_id=userdata['user_id'])
+        if user_id_check:
+            return {"status": 404, "message": "UserId already exists"}
+        else:
+            user_id = userdata['user_id']
+            sex = userdata['sex']
+            email = userdata['email']
+            height = userdata['height']
+            weight = userdata['weight']
+            birthday = userdata['birthday']
+            role = userdata['role']
+            password = encrypt_password(userdata['password'])
+            create_time = datetime.datetime.now()
+
+            user = User(user_id=user_id, sex=sex, height=height, weight=weight,
+                        birthday=birthday, email=email, password=password, role=role, create_time=create_time)
+            user.save()
+
+            return make_response({'message': 'succesfully inserted'}, 200)
+
+    except Exception as e:
+        return make_response({'message': str(e)}, 404)
+
+
 def search_service():
     users = []
     try:
