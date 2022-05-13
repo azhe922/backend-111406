@@ -20,6 +20,10 @@ MONGO_URI=mongodb+srv://backend:mtB5i2RUuWuSL2CK@cluster0.ftra1.mongodb.net/ntub
 - CMD、Terminal
     1. 切換目錄至專案根目錄
     2. 輸入`python application.py`
+- google app engine
+    1. 切換目錄至專案根目錄
+    2. 確認`application.py`內之DB連線字串
+    3. 輸入`gcloud app deploy`, 接著輸入`Y`
 
 ## 專案負責人員
 
