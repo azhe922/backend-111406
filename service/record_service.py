@@ -1,8 +1,6 @@
-from cmath import exp
 from model.record import Record
 from flask import make_response
 import datetime
-import json
 
 def add_record_service(record_data):
     try:
