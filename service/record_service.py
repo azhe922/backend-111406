@@ -1,3 +1,4 @@
+from enums.training_part import TrainingPart
 from flask import make_response
 from datetime import datetime, timedelta, timezone
 from model.record import Record
@@ -5,7 +6,7 @@ from model.record import Record
 def add_record_service(record_data):
     try:
         user_id = record_data['user_id']
-        part = record_data['part']
+        part = TrainingPart(record_data['part'])
         type = record_data['type']
         times = record_data['times']
         angles = record_data['angles']
