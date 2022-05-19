@@ -16,7 +16,9 @@ def add_record_service(record_data):
                         times=times, angles=angles, create_time=create_time)
         record.save()
 
-        return make_response({'message': 'succesfully inserted'}, 201)
+        return make_response({'message' : '新增成功'}, 201)        
+    except Exception as e:
+        return make_response({'message' : str(e)}, 500)  
 
 def search_service(user_id):
     records = []

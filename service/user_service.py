@@ -27,7 +27,7 @@ def signup_service(userdata):
             return make_response({'message': 'succesfully inserted'}, 200)
 
     except Exception as e:
-        return make_response({'message': str(e)}, 404)
+        return make_response({'message': str(e)}, 500)
 
 
 def search_service():
@@ -45,7 +45,7 @@ def search_service():
             user_data['role'] = user.role
             users.append(user_data)
 
-        return make_response({'message': 'succesfully inserted', 'data': users}, 200)
+        return make_response({'message': '查詢成功', 'data': users}, 200)
 
     except Exception as e:
-        return make_response({'message': str(e)}, 404)
+        return make_response({'message': str(e)}, 500)
