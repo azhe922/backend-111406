@@ -1,7 +1,7 @@
 from model.user import User
 from flask import make_response
 from utils.passwordEncryption import encrypt_password
-import datetime
+from datetime import datetime, timedelta, timezone
 
 
 def signup_service(userdata):
@@ -18,7 +18,7 @@ def signup_service(userdata):
             birthday = userdata['birthday']
             role = userdata['role']
             password = encrypt_password(userdata['password'])
-            create_time = datetime.datetime.now()
+            create_time = datetime.now(timezone(timedelta(hours=+8)))
 
             user = User(user_id=user_id, sex=sex, height=height, weight=weight,
                         birthday=birthday, email=email, password=password, role=role, create_time=create_time)
