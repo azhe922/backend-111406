@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from service.record_service import add_record_service
+from service.record_service import add_record_service, search_service
 
 record_route = Blueprint('record_route', __name__)
 root_path = "/api/record"
@@ -8,3 +8,8 @@ root_path = "/api/record"
 def add():
     data = request.get_json()
     return add_record_service(data)
+
+
+@record_route.route(f"{root_path}/<user_id>", methods=['GET'])
+def search(user_id):
+    return search_service(user_id)
