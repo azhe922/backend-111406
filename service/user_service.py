@@ -11,7 +11,7 @@ def signup_service(userdata):
             return {"status": 404, "message": "UserId already exists"}
         else:
             user_id = userdata['user_id']
-            sex = userdata['sex']
+            gender = userdata['gender']
             email = userdata['email']
             height = userdata['height']
             weight = userdata['weight']
@@ -20,7 +20,7 @@ def signup_service(userdata):
             password = encrypt_password(userdata['password'])
             create_time = datetime.now(timezone(timedelta(hours=+8)))
 
-            user = User(user_id=user_id, sex=sex, height=height, weight=weight,
+            user = User(user_id=user_id, gender=gender, height=height, weight=weight,
                         birthday=birthday, email=email, password=password, role=role, create_time=create_time)
             user.save()
 
@@ -40,7 +40,7 @@ def search_service():
             user_data['email'] = user.email
             user_data['height'] = user.height
             user_data['weight'] = user.weight
-            user_data['sex'] = user.sex
+            user_data['gender'] = user.gender
             user_data['birthday'] = user.birthday
             user_data['role'] = user.role
             users.append(user_data)
