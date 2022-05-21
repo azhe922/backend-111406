@@ -40,9 +40,9 @@ def search_service():
             user_data['email'] = user.email
             user_data['height'] = user.height
             user_data['weight'] = user.weight
-            user_data['gender'] = user.gender
+            user_data['gender'] = user.gender.description
             user_data['birthday'] = user.birthday
-            user_data['role'] = user.role
+            user_data['role'] = user.role.description
             users.append(user_data)
 
         return make_response({'message': '查詢成功', 'data': users}, 200)
