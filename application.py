@@ -16,4 +16,6 @@ CORS(app)
 connect(host=os.environ.get('MONGO_URI'))
 
 if __name__ == '__main__':
+    # 中文亂碼問題
+    app.config['JSON_AS_ASCII'] = False
     app.run(debug=True)
