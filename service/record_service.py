@@ -27,7 +27,7 @@ def search_service(user_id, isfirst=False):
         record_data['type'] = record.type.description
         record_data['times'] = record.times
         record_data['angles'] = record.angles
-        record_data['create_time'] = record.create_time
+        record_data['create_time'] = record.create_time.strftime("%Y-%m-%d %H:%M:%S")
         records.append(record_data)
     
     return records
