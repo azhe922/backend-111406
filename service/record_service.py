@@ -20,20 +20,18 @@ def add_record_service(record_data):
     except Exception as e:
         return make_response({'message' : str(e)}, 500)  
 
-def search_service(user_id):
+def search_service(user_id, isfirst=False):
     records = []
-    try:
-        for record in Record.objects(user_id = user_id):
-            record_data = {}
-            record_data['_id'] = str(record.id)
-            record_data['part'] = record.part.description
-            record_data['type'] = record.type.description
-            record_data['times'] = record.times
-            record_data['angles'] = record.angles
-            record_data['create_time'] = record.create_time
-            records.append(record_data)
-
-        return make_response({'message': '查詢成功', 'data': records}, 200)
-
-    except Exception as e:
-        return make_response({'message': str(e)}, 500)
+    results = Record.objects[:1](user_id=user_id).order_by(
+        '-create_time') if isfirst else Record.objects(user_id=user_id).order_by('-create_time')
+    for record in results:
+        record_data = {}
+        record_data['_id'] = str(record.id)
+        record_data['part'] = record.part.description
+        record_data['type'] = record.type.description
+        record_data['times'] = record.times
+        record_data['angles'] = record.angles
+        record_data['create_time'] = record.create_time
+        records.append(record_data)
+    
+    return records
