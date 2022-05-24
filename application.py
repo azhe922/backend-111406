@@ -1,4 +1,3 @@
-import os
 from flask import Flask
 from flask_cors import CORS
 from mongoengine import connect
@@ -12,8 +11,9 @@ app.register_blueprint(user_route)
 app.register_blueprint(record_route)
 app.register_blueprint(standard_route)
 
+app.config.from_object('config.ProductionConfig')
 CORS(app)
-connect(host=os.environ.get('MONGO_URI'))
+connect(host=app.config['DB_HOST'])
 
 if __name__ == '__main__':
     # 中文亂碼問題
