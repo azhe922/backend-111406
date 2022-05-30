@@ -4,15 +4,33 @@
 
 - 程式語言：Python
 - 版本：Python 3.9.8
-- 框架：Flask 2.1.1
+- 框架：Flask 2.0.3
 - ORM：MongoEngine 0.24.1
 
 ## 專案設定
 
-1.於資料夾內新增檔案，檔名為`.env`
-2.在`.env`內新增以下參數
+1. 啟動CMD or Terminal並切換至專案根目錄
+2. 分別輸入以下指令
+
+(in Windows)
+
+```cmd=
+python -m venv .venv
+.venv\Scripts\activate.bat
 ```
-MONGO_URI=mongodb+srv://backend:mtB5i2RUuWuSL2CK@cluster0.ftra1.mongodb.net/ntubapp
+
+(in Unix or MacOS)
+
+```terminal=
+python -m venv .venv
+source .venv/bin/activate
+```
+
+3. 接著輸入`pip install -r requirements.txt`以下載所需套件
+4. 將`application.py`內的配置檔調整為開發模式
+
+```python=
+app.config.from_object('config.Config')
 ```
 
 ## 專案啟動

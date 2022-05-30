@@ -16,6 +16,4 @@ CORS(app)
 connect(host=app.config['DB_HOST'])
 
 if __name__ == '__main__':
-    # 中文亂碼問題
-    app.config['JSON_AS_ASCII'] = False
-    app.run(debug=True)
+    app.run(threaded=True)
