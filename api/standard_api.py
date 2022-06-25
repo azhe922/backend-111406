@@ -7,9 +7,9 @@ standard_route = Blueprint('standard_route', __name__)
 root_path = "/api/standard"
 
 
-@standard_route.route(f"{root_path}/analyze", methods=['GET'])
+@standard_route.route(f"{root_path}/analyze", methods=['POST'])
 def analyze_record():
-    # parameter which is like (user_id, age, part, gender, times)
+    # the parameter which is like (user_id, age, part, gender, times)
     data = request.get_json()
     message = ""
     status = 200
