@@ -1,11 +1,10 @@
 from model.user import User
-from utils.passwordEncryption import encrypt_password
+from utils.passwordEncryption import encrypt_password, compare_passwords
 from datetime import datetime, timedelta, timezone
 
 
 def signup_service(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
-    print(user_id_check)
     if user_id_check:
         raise Exception('此帳號已被註冊')
     else:
@@ -23,6 +22,13 @@ def signup_service(userdata):
                     birthday=birthday, email=email, password=password, role=role, create_time=create_time)
         user.save()
 
+def login_service(userdata):
+    user_check = User.objects[:1](user_id=userdata['user_id'])
+    if not user_check:
+        raise Exception('查無此帳號')
+    else:
+        for user in user_check:
+            return compare_passwords(userdata['password'], user['password'])
 
 def search_service():
     users = []
