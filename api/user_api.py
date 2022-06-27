@@ -1,5 +1,5 @@
 from flask import Blueprint, request, make_response
-from service.user_service import signup_service, search_service
+from service.user_service import signup_service, search_service, get_by_id_service
 
 user_route = Blueprint('user_route', __name__)
 root_path = "/api/user"
@@ -25,6 +25,20 @@ def search():
     status = 200
     try:
         result = search_service()
+        message = "查詢成功"
+    except Exception as e:
+        message = str(e)
+        status = 500
+    response = make_response({"message": message, "data": result}, status)
+    return response
+
+@user_route.route(f"{root_path}/<user_id>", methods=['GET'])
+def get_by_id(user_id):
+    result = []
+    message = ""
+    status = 200
+    try:
+        result = get_by_id_service(user_id)
         message = "查詢成功"
     except Exception as e:
         message = str(e)
