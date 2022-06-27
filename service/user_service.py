@@ -5,8 +5,9 @@ from datetime import datetime, timedelta, timezone
 
 def signup_service(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
+    print(user_id_check)
     if user_id_check:
-        return {"status": 404, "message": "UserId already exists"}
+        raise Exception('此帳號已被註冊')
     else:
         user_id = userdata['user_id']
         gender = userdata['gender']
