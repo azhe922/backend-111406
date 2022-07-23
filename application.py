@@ -18,6 +18,12 @@ app.config.from_object('config.ProductionConfig')
 with open(file="./logconfig.yaml", mode='r', encoding="utf-8") as file:
     logging_yaml = yaml.load(stream=file, Loader=yaml.FullLoader)
     logging.config.dictConfig(config=logging_yaml)
+
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
+
 CORS(app)
 connect(host=app.config['DB_HOST'])
 
