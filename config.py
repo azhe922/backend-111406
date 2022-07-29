@@ -4,6 +4,12 @@ class Config(object):
     DEVELOPMENT = True
     DB_HOST = os.getenv('db_host')
     JSON_AS_ASCII = False    
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 465
+    MAIL_USE_TLS = False
+    MAIL_USE_SSL = True
+    MAIL_USERNAME = os.getenv('email_username')
+    MAIL_PASSWORD = os.getenv('email_password')
 
     @staticmethod
     def init_app(app):
