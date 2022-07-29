@@ -1,19 +1,18 @@
-from flask import Flask
-from flask_cors import CORS
-from mongoengine import connect
-from api.user_api import user_route
-from api.record_api import record_route
-from api.standard_api import standard_route
+import os
+import logging
+import logging.config
+import yaml
+from initapp import create_app
 
-app = Flask(__name__)
+app = create_app(os.getenv('flask_config') or 'default')
 
-app.register_blueprint(user_route)
-app.register_blueprint(record_route)
-app.register_blueprint(standard_route)
+with open(file="./logconfig.yaml", mode='r', encoding="utf-8") as file:
+    logging_yaml = yaml.load(stream=file, Loader=yaml.FullLoader)
+    logging.config.dictConfig(config=logging_yaml)
 
-app.config.from_object('config.ProductionConfig')
-CORS(app)
-connect(host=app.config['DB_HOST'])
-
+if __name__ != '__main__':
+    gunicorn_logger = logging.getLogger('gunicorn.error')
+    app.logger.handlers = gunicorn_logger.handlers
+    app.logger.setLevel(gunicorn_logger.level)
 if __name__ == '__main__':
     app.run(threaded=True)
