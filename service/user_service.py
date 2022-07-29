@@ -1,5 +1,5 @@
 from model.user import User
-from utils.passwordEncryption import encrypt_password, compare_passwords
+from utils.password_encryption import encrypt_password, compare_passwords
 from datetime import datetime, timedelta, timezone
 
 

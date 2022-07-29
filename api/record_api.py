@@ -1,13 +1,13 @@
-from flask import Blueprint, request, make_response
+from flask import request, make_response
 from service.record_service import add_record_service, search_service
 import logging
+from . import api
 
-record_route = Blueprint('record_route', __name__)
-root_path = "/api/record"
+root_path = "/record"
 logger = logging.getLogger(__name__)
 
 # 新增運動紀錄
-@record_route.route(root_path, methods=['POST'])
+@api.route(root_path, methods=['POST'])
 def add():
     data = request.get_json()
     message = ""
@@ -24,8 +24,8 @@ def add():
     return response
 
 # 查詢所有運動紀錄
-@record_route.route(f"{root_path}/<user_id>", methods=['GET'])
-def search(user_id):
+@api.route(f"{root_path}/<user_id>", methods=['GET'])
+def search_record(user_id):
     result = []
     message = ""
     status = 200

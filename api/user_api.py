@@ -1,13 +1,13 @@
-from flask import Blueprint, request, make_response
+from flask import request, make_response
 from service.user_service import signup_service, search_service, get_by_id_service, login_service
 import logging
+from . import api
 
-user_route = Blueprint('user_route', __name__)
-root_path = "/api/user"
+root_path = "/user"
 logger = logging.getLogger(__name__)
 
 # 使用者註冊
-@user_route.route(f"{root_path}/signup", methods=['POST'])
+@api.route(f"{root_path}/signup", methods=['POST'])
 def signup():
     data = request.get_json()
     message = ""
@@ -25,7 +25,7 @@ def signup():
     return response
 
 # 使用者登入
-@user_route.route(f"{root_path}/login", methods=['POST'])
+@api.route(f"{root_path}/login", methods=['POST'])
 def login():
     data = request.get_json()
     message = ""
@@ -42,9 +42,8 @@ def login():
     return response
 
 # 查詢所有使用者
-@user_route.route(root_path, methods=['GET'])
+@api.route(root_path, methods=['GET'])
 def search():
-    logger.info('user search')
     result = []
     message = ""
     status = 200
@@ -60,7 +59,7 @@ def search():
     return response
 
 # 依ID查詢使用者
-@user_route.route(f"{root_path}/<user_id>", methods=['GET'])
+@api.route(f"{root_path}/<user_id>", methods=['GET'])
 def get_by_id(user_id):
     result = []
     message = ""

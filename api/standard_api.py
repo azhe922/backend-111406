@@ -1,15 +1,15 @@
-from flask import Blueprint, make_response, request
+from flask import make_response, request
 from service.record_service import search_service
 import logging
+from . import api
 
 from service.standard_service import get_times_service
 
-standard_route = Blueprint('standard_route', __name__)
-root_path = "/api/standard"
+root_path = "/standard"
 logger = logging.getLogger(__name__)
 
 # 運動結果數據分析
-@standard_route.route(f"{root_path}/analyze", methods=['POST'])
+@api.route(f"{root_path}/analyze", methods=['POST'])
 def analyze_record():
     # the parameters like (user_id, age, part, gender, times)
     data = request.get_json()
