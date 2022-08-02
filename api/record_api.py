@@ -2,6 +2,7 @@ from flask import request, make_response
 from service.record_service import add_record_service, search_service, get_standard_times_service
 import logging
 from . import api
+from utils.jwt_token import validate_token
 
 root_path = "/record"
 logger = logging.getLogger(__name__)
@@ -9,14 +10,17 @@ logger = logging.getLogger(__name__)
 # 新增運動測試紀錄
 
 
+@validate_token
 @api.route(root_path, methods=['POST'])
 def add():
     data = request.get_json()
+    logger.info(f"record data: {data}")
     message = ""
     status = 200
     try:
         add_record_service(data)
         message = "新增紀錄成功"
+        logger.info(message)
     except Exception as e:
         errMessage = str(e)
         status = 500
@@ -47,10 +51,12 @@ def search_record(user_id):
 # 測試結果數據分析
 
 
+@validate_token
 @api.route(f"{root_path}/analyze", methods=['POST'])
 def analyze_record():
     # the parameters like (user_id, age, part, gender, times)
     data = request.get_json()
+    logger.info(f"analyze data: {data}")
     message = ""
     status = 200
     result = {}
@@ -77,6 +83,7 @@ def analyze_record():
         if difference > -100:
             result["difference"] = difference
         message = "分析成功"
+        logger.info(message)
     except Exception as e:
         result = {}
         status = 500
