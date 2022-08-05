@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField, FloatField, DateTimeField, EnumField
+from mongoengine import Document, StringField, EmailField, FloatField, IntField, EnumField
 
 from enums.user_role import UserRole
 from enums.gender import Gender
@@ -12,5 +12,5 @@ class User(Document):
     gender = EnumField(Gender, required=True, max_length=1)
     birthday = StringField(required=True, max_length=10)
     role = EnumField(UserRole, required=True, max_length=1)
-    create_time = DateTimeField()
-    update_time = DateTimeField()
+    create_time = IntField()
+    update_time = IntField()

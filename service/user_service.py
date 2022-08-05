@@ -1,6 +1,7 @@
 from model.user import User
 from utils.password_encryption import encrypt_password, compare_passwords
-from datetime import datetime, timedelta, timezone
+import time
+from datetime import datetime as dt
 
 
 def signup(userdata):
@@ -44,10 +45,12 @@ def search():
         user_data['gender'] = user.gender.description
         user_data['birthday'] = user.birthday
         user_data['role'] = user.role.description
-        user_data['create_time'] = user.create_time.strftime("%Y-%m-%d %H:%M:%S")
-        user_data['update_time'] = "" if user.update_time is None else user.update_time.strftime("%Y-%m-%d %H:%M:%S")
+        user_data['create_time'] = dt.fromtimestamp(
+            user.create_time).strftime('%Y-%m-%d %H:%M:%S')
+        user_data['update_time'] = "" if user.update_time is None else dt.fromtimestamp(
+            user.update_time).strftime('%Y-%m-%d %H:%M:%S')
         users.append(user_data)
-        
+
     return users
 
 
@@ -55,7 +58,6 @@ def get_by_id(user_id):
     users = []
     for user in User.objects[:1](user_id=user_id):
         user_data = {}
-        user_data['_id'] = str(user.id)
         user_data['user_id'] = user.user_id
         user_data['email'] = user.email
         user_data['height'] = user.height
@@ -63,7 +65,9 @@ def get_by_id(user_id):
         user_data['gender'] = user.gender.description
         user_data['birthday'] = user.birthday
         user_data['role'] = user.role.description
-        user_data['create_time'] = user.create_time.strftime("%Y-%m-%d %H:%M:%S")
-        user_data['update_time'] = "" if user.update_time is None else user.update_time.strftime("%Y-%m-%d %H:%M:%S")
+        user_data['create_time'] = dt.fromtimestamp(
+            user.create_time).strftime('%Y-%m-%d %H:%M:%S')
+        user_data['update_time'] = "" if user.update_time is None else dt.utcfromtimestamp(
+            user.update_time).strftime('%Y-%m-%d %H:%M:%S')
         users.append(user_data)
     return users

@@ -1,8 +1,9 @@
 from enums.training_part import TrainingPart
 from enums.gender import Gender
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from model.record import Record
 from model.standard import Standard
+import time
 
 
 def add_record(record_data):
@@ -10,7 +11,7 @@ def add_record(record_data):
     part = TrainingPart(record_data['part'])
     times = record_data['times']
     angles = record_data['angles']
-    create_time = datetime.now(timezone(timedelta(hours=+8)))
+    create_time = int(time.time())
 
     record = Record(user_id=user_id, part=part, times=times,
                     angles=angles, create_time=create_time)
@@ -27,8 +28,8 @@ def search(user_id, isfirst=False):
         record_data['part'] = record.part.description
         record_data['times'] = record.times
         record_data['angles'] = record.angles
-        record_data['create_time'] = record.create_time.strftime(
-            "%Y-%m-%d %H:%M:%S")
+        record_data['create_time'] = datetime.fromtimestamp(
+            record.create_time).strftime('%Y-%m-%d %H:%M:%S')
         records.append(record_data)
 
     return records
