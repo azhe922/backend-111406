@@ -1,7 +1,9 @@
 from flask import request, make_response
 from service.record_service import add_record, search, get_standard_times
 import logging
+import json
 from . import api
+from utils.jwt_token import validate_token
 
 root_path = "/record"
 logger = logging.getLogger(__name__)
@@ -10,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 @api.route(root_path, methods=['POST'])
+@validate_token
 def add():
     data = request.get_json()
     message = ""
@@ -29,6 +32,7 @@ def add():
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
+@validate_token
 def search_record(user_id):
     result = []
     message = ""

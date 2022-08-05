@@ -2,6 +2,8 @@ from model.user import User
 from utils.password_encryption import encrypt_password, compare_passwords
 import time
 from datetime import datetime as dt
+import datetime
+from utils.jwt_token import generate_token
 
 
 def signup(userdata):
@@ -30,7 +32,14 @@ def login(userdata):
         raise Exception('查無此帳號')
     else:
         for user in user_check:
-            return compare_passwords(userdata['password'], user['password'])
+            payload = {"user_id": user['user_id'], "_id": str(user['id']),
+                       "email": user['email'], "role": user['role'].value, 
+                       'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
+            print(payload)
+            if compare_passwords(userdata['password'], user['password']):
+                return generate_token(payload)
+            else:
+                return None
 
 
 def search():
