@@ -1,5 +1,5 @@
 from flask import request, make_response
-from service.record_service import add_record_service, search_service, get_standard_times_service
+from service.record_service import add_record, search, get_standard_times
 import logging
 from . import api
 
@@ -15,7 +15,7 @@ def add():
     message = ""
     status = 200
     try:
-        add_record_service(data)
+        add_record(data)
         message = "新增紀錄成功"
     except Exception as e:
         errMessage = str(e)
@@ -34,7 +34,7 @@ def search_record(user_id):
     message = ""
     status = 200
     try:
-        result = search_service(user_id)
+        result = search(user_id)
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -55,8 +55,8 @@ def analyze_record():
     status = 200
     result = {}
     try:
-        standard = get_standard_times_service(data)
-        record = search_service(data['user_id'], True)
+        standard = get_standard_times(data)
+        record = search(data['user_id'], True)
         times = data['times']
         compare = [s for s in standard if times >= s]
         difference = times - record[0]['times'] if len(record) > 0 else -999

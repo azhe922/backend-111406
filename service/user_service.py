@@ -3,7 +3,7 @@ from utils.password_encryption import encrypt_password, compare_passwords
 from datetime import datetime, timedelta, timezone
 
 
-def signup_service(userdata):
+def signup(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
     if user_id_check:
         raise Exception('此帳號已被註冊')
@@ -22,7 +22,8 @@ def signup_service(userdata):
                     birthday=birthday, email=email, password=password, role=role, create_time=create_time)
         user.save()
 
-def login_service(userdata):
+
+def login(userdata):
     user_check = User.objects[:1](user_id=userdata['user_id'])
     if not user_check:
         raise Exception('查無此帳號')
@@ -30,7 +31,8 @@ def login_service(userdata):
         for user in user_check:
             return compare_passwords(userdata['password'], user['password'])
 
-def search_service():
+
+def search():
     users = []
     for user in User.objects:
         user_data = {}
@@ -48,7 +50,8 @@ def search_service():
         
     return users
 
-def get_by_id_service(user_id):
+
+def get_by_id(user_id):
     users = []
     for user in User.objects[:1](user_id=user_id):
         user_data = {}

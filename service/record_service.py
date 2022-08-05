@@ -5,7 +5,7 @@ from model.record import Record
 from model.standard import Standard
 
 
-def add_record_service(record_data):
+def add_record(record_data):
     user_id = record_data['user_id']
     part = TrainingPart(record_data['part'])
     times = record_data['times']
@@ -17,7 +17,7 @@ def add_record_service(record_data):
     record.save()
 
 
-def search_service(user_id, isfirst=False):
+def search(user_id, isfirst=False):
     records = []
     results = Record.objects[:1](user_id=user_id).order_by(
         '-create_time') if isfirst else Record.objects(user_id=user_id).order_by('-create_time')
@@ -34,7 +34,7 @@ def search_service(user_id, isfirst=False):
     return records
 
 
-def get_standard_times_service(data):
+def get_standard_times(data):
     times = []
     age = data['age']
     gender = Gender(data['gender'])

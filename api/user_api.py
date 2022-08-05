@@ -1,5 +1,5 @@
 from flask import request, make_response
-from service.user_service import signup_service, search_service, get_by_id_service, login_service
+from service.user_service import signup, search, get_by_id, login, update
 import logging
 from . import api
 
@@ -14,7 +14,7 @@ def signup():
     status = 200
     logger.info(f"{data['user_id']} 使用者註冊: {data}")
     try:
-        signup_service(data)
+        signup(data)
         message = "註冊成功"
     except Exception as e:
         errMessage = str(e)
@@ -48,7 +48,7 @@ def search():
     message = ""
     status = 200
     try:
-        result = search_service()
+        result = search()
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -65,7 +65,7 @@ def get_by_id(user_id):
     message = ""
     status = 200
     try:
-        result = get_by_id_service(user_id)
+        result = get_by_id(user_id)
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
