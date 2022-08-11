@@ -4,7 +4,6 @@ import time
 from datetime import datetime as dt
 import datetime
 from app.utils.jwt_token import generate_token
-import json
 
 
 def signup(userdata):
@@ -12,10 +11,11 @@ def signup(userdata):
     if user_id_check:
         raise Exception('此帳號已被註冊')
     else:
-        userdata['password'] = encrypt_password(userdata['password'])
+        userdata['password'] = encrypt_password(userdata['password']).decode("utf-8")
         userdata['create_time'] = int(time.time())
 
-        user = json.loads(userdata, object_hook=lambda d: User(**d))
+        userdata_json = str(userdata).replace("\'", "\"")
+        user = User().from_json(userdata_json)
         user.save()
 
 
@@ -38,15 +38,7 @@ def login(userdata):
 def search():
     users = []
     for user in User.objects:
-        user_data = {}
-        user_data['_id'] = str(user.id)
-        user_data['user_id'] = user.user_id
-        user_data['email'] = user.email
-        user_data['height'] = user.height
-        user_data['weight'] = user.weight
-        user_data['gender'] = user.gender.description
-        user_data['birthday'] = user.birthday
-        user_data['role'] = user.role.description
+        user_data = user.to_json()
         user_data['create_time'] = dt.fromtimestamp(
             user.create_time).strftime('%Y-%m-%d %H:%M:%S')
         user_data['update_time'] = "" if user.update_time is None else dt.fromtimestamp(
@@ -59,17 +51,10 @@ def search():
 def get_by_id(user_id):
     users = []
     for user in User.objects[:1](user_id=user_id):
-        user_data = {}
-        user_data['user_id'] = user.user_id
-        user_data['email'] = user.email
-        user_data['height'] = user.height
-        user_data['weight'] = user.weight
-        user_data['gender'] = user.gender.description
-        user_data['birthday'] = user.birthday
-        user_data['role'] = user.role.description
+        user_data = user.to_json()
         user_data['create_time'] = dt.fromtimestamp(
             user.create_time).strftime('%Y-%m-%d %H:%M:%S')
-        user_data['update_time'] = "" if user.update_time is None else dt.utcfromtimestamp(
+        user_data['update_time'] = "" if user.update_time is None else dt.fromtimestamp(
             user.update_time).strftime('%Y-%m-%d %H:%M:%S')
         users.append(user_data)
     return users
