@@ -1,8 +1,8 @@
-from enums.training_part import TrainingPart
-from enums.gender import Gender
+from app.enums.training_part import TrainingPart
+from app.enums.gender import Gender
 from datetime import datetime
-from model.record import Record
-from model.standard import Standard
+from app.model.record import Record
+from app.model.standard import Standard
 import time
 
 

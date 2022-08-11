@@ -1,6 +1,6 @@
 from mongoengine import Document, StringField, IntField, ListField, EnumField
 
-from enums.training_part import TrainingPart
+from app.enums.training_part import TrainingPart
 
 class Record(Document):
     user_id = StringField(required=True, max_length=20)

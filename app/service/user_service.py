@@ -1,9 +1,10 @@
-from model.user import User
-from utils.password_encryption import encrypt_password, compare_passwords
+from app.model.user import User
+from app.utils.password_encryption import encrypt_password, compare_passwords
 import time
 from datetime import datetime as dt
 import datetime
-from utils.jwt_token import generate_token
+from app.utils.jwt_token import generate_token
+import json
 
 
 def signup(userdata):
@@ -11,18 +12,10 @@ def signup(userdata):
     if user_id_check:
         raise Exception('此帳號已被註冊')
     else:
-        user_id = userdata['user_id']
-        gender = userdata['gender']
-        email = userdata['email']
-        height = userdata['height']
-        weight = userdata['weight']
-        birthday = userdata['birthday']
-        role = userdata['role']
-        password = encrypt_password(userdata['password'])
-        create_time = datetime.now(timezone(timedelta(hours=+8)))
+        userdata['password'] = encrypt_password(userdata['password'])
+        userdata['create_time'] = int(time.time())
 
-        user = User(user_id=user_id, gender=gender, height=height, weight=weight,
-                    birthday=birthday, email=email, password=password, role=role, create_time=create_time)
+        user = json.loads(userdata, object_hook=lambda d: User(**d))
         user.save()
 
 

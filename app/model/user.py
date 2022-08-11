@@ -1,7 +1,7 @@
 from mongoengine import Document, StringField, EmailField, FloatField, IntField, EnumField
 
-from enums.user_role import UserRole
-from enums.gender import Gender
+from app.enums.user_role import UserRole
+from app.enums.gender import Gender
 
 class User(Document):
     user_id = StringField(required=True, max_length=20)

@@ -1,8 +1,8 @@
 from flask import request, make_response
-from service.user_service import signup, search, get_by_id, login, update
+from app.service.user_service import signup as user_signup, search, get_by_id, login
 import logging
 from . import api
-from utils.jwt_token import validate_token
+from app.utils.jwt_token import validate_token
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ def signup():
     status = 200
     logger.info(f"{data['user_id']} 使用者註冊: {data}")
     try:
-        signup(data)
+        user_signup(data)
         message = "註冊成功"
         logger.info(f"{data['user_id']} {message}")
     except Exception as e:
