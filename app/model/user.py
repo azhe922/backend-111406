@@ -6,7 +6,7 @@ import json
 
 class User(Document):
     user_id = StringField(required=True, max_length=20)
-    password = StringField(required=True, max_length=100)
+    password = StringField(max_length=100)
     email = EmailField(required=True, max_length=100)
     height = FloatField(max_length=10)
     weight = FloatField(max_length=10)

@@ -6,7 +6,7 @@ import datetime
 from app.utils.jwt_token import generate_token
 
 
-def signup(userdata):
+def user_signup(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
     if user_id_check:
         raise Exception('此帳號已被註冊')
@@ -19,7 +19,7 @@ def signup(userdata):
         user.save()
 
 
-def login(userdata):
+def user_login(userdata):
     user_check = User.objects[:1](user_id=userdata['user_id'])
     if not user_check:
         raise Exception('查無此帳號')
@@ -35,7 +35,7 @@ def login(userdata):
                 return None
 
 
-def search():
+def search_user():
     users = []
     for user in User.objects:
         user_data = user.to_json()
@@ -58,3 +58,20 @@ def get_by_id(user_id):
             user.update_time).strftime('%Y-%m-%d %H:%M:%S')
         users.append(user_data)
     return users
+
+
+def update_user(user):
+    old_user = User.objects(user_id=user['user_id'])
+    update_time = int(time.time())
+    if old_user:
+        old_user = old_user.get(user_id=user['user_id'])
+        userdata_json = str(user).replace("\'", "\"")
+        new_user = User().from_json(userdata_json)
+        old_user.email = new_user.email
+        old_user.height = new_user.height
+        old_user.weight = new_user.weight
+        old_user.gender = new_user.gender
+        old_user.birthday = new_user.birthday
+        old_user.role = new_user.role
+        old_user.update_time = update_time
+        old_user.save()

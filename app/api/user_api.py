@@ -1,5 +1,5 @@
 from flask import request, make_response
-from app.service.user_service import signup as user_signup, search, get_by_id, login
+from app.service.user_service import user_signup, search_user, get_by_id, user_login, update_user
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
@@ -39,13 +39,13 @@ def login():
     token = ""
     logger.info(f"{data['user_id']} 使用者登入")
     try:
-        token = login(data)
+        token = user_login(data)
         message = "登入成功" if token else "登入失敗，帳號或密碼錯誤"
     except Exception as e:
         errMessage = str(e)
         status = 500
         logger.error(errMessage)
-        message = "登入失敗，請稍後再試"
+        message = errMessage
     response = make_response({"message": message}, status)
     response.headers['token'] = token
     return response
@@ -60,7 +60,7 @@ def search():
     message = ""
     status = 200
     try:
-        result = search()
+        result = search_user()
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -75,7 +75,7 @@ def search():
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
 @validate_token
-def get_by_id(user_id):
+def get_user(user_id):
     result = []
     message = ""
     status = 200
@@ -88,4 +88,26 @@ def get_by_id(user_id):
         logger.error(errMessage)
         message = "查詢失敗，請稍後再試"
     response = make_response({"message": message, "data": result}, status)
+    return response
+
+# 使用者資料更新
+
+
+@api.route(f"{root_path}/update", methods=['POST'])
+@validate_token
+def update():
+    data = request.get_json()
+    message = ""
+    status = 200
+    logger.info(f"{data['user_id']} 使用者資料更新: {data}")
+    try:
+        update_user(data)
+        message = "更新成功"
+        logger.info(f"{data['user_id']} {message}")
+    except Exception as e:
+        errMessage = str(e)
+        status = 500
+        logger.error(errMessage)
+        message = "更新失敗，請稍後再試"
+    response = make_response({"message": message}, status)
     return response
