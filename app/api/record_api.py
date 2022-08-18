@@ -1,8 +1,9 @@
 from flask import request, make_response
-from service.record_service import add_record_service, search_service, get_standard_times_service
+from app.service.record_service import add_record, search, get_standard_times
 import logging
+import json
 from . import api
-from utils.jwt_token import validate_token
+from app.utils.jwt_token import validate_token
 
 root_path = "/record"
 logger = logging.getLogger(__name__)
@@ -10,15 +11,15 @@ logger = logging.getLogger(__name__)
 # 新增運動測試紀錄
 
 
-@validate_token
 @api.route(root_path, methods=['POST'])
+@validate_token
 def add():
     data = request.get_json()
     logger.info(f"record data: {data}")
     message = ""
     status = 200
     try:
-        add_record_service(data)
+        add_record(data)
         message = "新增紀錄成功"
         logger.info(message)
     except Exception as e:
@@ -33,12 +34,13 @@ def add():
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
+@validate_token
 def search_record(user_id):
     result = []
     message = ""
     status = 200
     try:
-        result = search_service(user_id)
+        result = search(user_id)
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -51,7 +53,6 @@ def search_record(user_id):
 # 測試結果數據分析
 
 
-@validate_token
 @api.route(f"{root_path}/analyze", methods=['POST'])
 def analyze_record():
     # the parameters like (user_id, age, part, gender, times)
@@ -61,8 +62,8 @@ def analyze_record():
     status = 200
     result = {}
     try:
-        standard = get_standard_times_service(data)
-        record = search_service(data['user_id'], True)
+        standard = get_standard_times(data)
+        record = search(data['user_id'], True)
         times = data['times']
         compare = [s for s in standard if times >= s]
         difference = times - record[0]['times'] if len(record) > 0 else -999

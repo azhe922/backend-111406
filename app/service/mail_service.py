@@ -1,4 +1,4 @@
-from model.validcode import ValidCode
+from app.model.validcode import ValidCode
 import time
 
 def add_valid_code(data):

@@ -2,11 +2,11 @@ import os
 import logging
 import logging.config
 import yaml
-from initapp import create_app
+from app import create_app
 
 app = create_app(os.getenv('flask_config') or 'default')
 
-with open(file="./logconfig.yaml", mode='r', encoding="utf-8") as file:
+with open(file="logconfig.yaml", mode='r', encoding="utf-8") as file:
     logging_yaml = yaml.load(stream=file, Loader=yaml.FullLoader)
     logging.config.dictConfig(config=logging_yaml)
 

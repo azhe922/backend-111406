@@ -1,23 +1,24 @@
-from enums.training_part import TrainingPart
-from enums.gender import Gender
-from datetime import datetime, timedelta, timezone
-from model.record import Record
-from model.standard import Standard
+from app.enums.training_part import TrainingPart
+from app.enums.gender import Gender
+from datetime import datetime
+from app.model.record import Record
+from app.model.standard import Standard
+import time
 
 
-def add_record_service(record_data):
+def add_record(record_data):
     user_id = record_data['user_id']
     part = TrainingPart(record_data['part'])
     times = record_data['times']
     angles = record_data['angles']
-    create_time = datetime.now(timezone(timedelta(hours=+8)))
+    create_time = int(time.time())
 
     record = Record(user_id=user_id, part=part, times=times,
                     angles=angles, create_time=create_time)
     record.save()
 
 
-def search_service(user_id, isfirst=False):
+def search(user_id, isfirst=False):
     records = []
     results = Record.objects[:1](user_id=user_id).order_by(
         '-create_time') if isfirst else Record.objects(user_id=user_id).order_by('-create_time')
@@ -27,14 +28,14 @@ def search_service(user_id, isfirst=False):
         record_data['part'] = record.part.description
         record_data['times'] = record.times
         record_data['angles'] = record.angles
-        record_data['create_time'] = record.create_time.strftime(
-            "%Y-%m-%d %H:%M:%S")
+        record_data['create_time'] = datetime.fromtimestamp(
+            record.create_time).strftime('%Y-%m-%d %H:%M:%S')
         records.append(record_data)
 
     return records
 
 
-def get_standard_times_service(data):
+def get_standard_times(data):
     times = []
     age = data['age']
     gender = Gender(data['gender'])

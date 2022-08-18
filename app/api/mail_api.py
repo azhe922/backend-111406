@@ -2,10 +2,10 @@ from flask import request, make_response
 from flask_mail import Message
 import logging
 from threading import Thread
-from initapp import mail
+from app import mail
 from . import api
 from random import randint
-from service.mail_service import get_code, add_valid_code
+from app.service.mail_service import get_code, add_valid_code
 
 root_path = "/mail"
 logger = logging.getLogger(__name__)
