@@ -6,6 +6,7 @@ from app import mail
 from . import api
 from random import randint
 from app.service.mail_service import get_code, add_valid_code
+from app.service.user_service import check_email_existed
 
 root_path = "/mail"
 logger = logging.getLogger(__name__)
@@ -21,11 +22,13 @@ def send_mail():
     valid_body = f"您的驗證碼: {otp}"
     valid_title = "忘記密碼驗證信"
     try:
+        email = data['email']
         data['otp'] = otp
+        check_email_existed(email)
         
         #  使用多執行緒
         from application import app
-        thr = Thread(target=__send_async_email, args=[app, valid_title, data['email'], valid_body])
+        thr = Thread(target=__send_async_email, args=[app, valid_title, email, valid_body])
         thr.start()
         
         add_valid_code(data)

@@ -1,5 +1,5 @@
 from flask import request, make_response
-from app.service.user_service import signup as user_signup, search, get_by_id, login
+from app.service.user_service import user_signup, user_search, getuser_by_id, user_login
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
@@ -39,7 +39,7 @@ def login():
     token = ""
     logger.info(f"{data['user_id']} 使用者登入")
     try:
-        token = login(data)
+        token = user_login(data)
         message = "登入成功" if token else "登入失敗，帳號或密碼錯誤"
     except Exception as e:
         errMessage = str(e)
@@ -60,7 +60,7 @@ def search():
     message = ""
     status = 200
     try:
-        result = search()
+        result = user_search()
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -80,7 +80,7 @@ def get_by_id(user_id):
     message = ""
     status = 200
     try:
-        result = get_by_id(user_id)
+        result = getuser_by_id(user_id)
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)

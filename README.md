@@ -47,7 +47,7 @@ flask_config = "development"  //正式環境請設定為"production"
     3. 輸入`gcloud app deploy`, 接著輸入`Y`
 - gunicorn
     1. 切換目錄至專案根目錄
-    2. 輸入`gunicorn --bind=0.0.0.0:8080 application:app`
+    2. 輸入`gunicorn --bind=localhost:8080 application:app`
     3. 至`http://localhost:8080/api/user`確認是否成功啟動
 
 ## 專案負責人員
