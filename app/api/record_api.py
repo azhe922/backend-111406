@@ -18,6 +18,11 @@ def add_record():
     message = ""
     status = 200
     try:
+        analyze = __analyze_record(data)
+        data['pr'] = analyze['pr']
+        data['test_result'] = analyze['test_result']
+        data.pop('gender', None)
+        data.pop('age', None)
         add_record_service(data)
         message = "新增紀錄成功"
         logger.info(message)
@@ -81,10 +86,7 @@ def __analyze_record(data):
         message = "分析成功"
         logger.info(message)
     except Exception as e:
-        result = {}
-        status = 500
         errMessage = str(e)
         logger.error(errMessage)
-        message = "分析失敗，請稍後再試"
-    response = make_response({"message": message, "data": result}, status)
-    return response
+        raise Exception(e)
+    return result

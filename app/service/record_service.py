@@ -3,18 +3,14 @@ from app.enums.gender import Gender
 from datetime import datetime
 from app.model.record import Record
 from app.model.standard import Standard
+from app.utils.backend_util import dict_to_json
 import time
 
 
-    user_id = record_data['user_id']
-    part = TrainingPart(record_data['part'])
-    times = record_data['times']
-    angles = record_data['angles']
-    create_time = int(time.time())
-
-    record = Record(user_id=user_id, part=part, times=times,
-                    angles=angles, create_time=create_time)
 def add_record_service(record_data):
+    record_data['create_time'] = int(time.time())
+    record_json = dict_to_json(record_data)
+    record = Record().from_json(record_json)
     record.save()
 
 
@@ -23,11 +19,7 @@ def search_record_service(user_id, isfirst=False):
     results = Record.objects[:1](user_id=user_id).order_by(
         '-create_time') if isfirst else Record.objects(user_id=user_id).order_by('-create_time')
     for record in results:
-        record_data = {}
-        record_data['_id'] = str(record.id)
-        record_data['part'] = record.part.description
-        record_data['times'] = record.times
-        record_data['angles'] = record.angles
+        record_data = record.to_json()
         record_data['create_time'] = datetime.fromtimestamp(
             record.create_time).strftime('%Y-%m-%d %H:%M:%S')
         records.append(record_data)
