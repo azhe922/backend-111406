@@ -75,3 +75,9 @@ def update_user(user):
         old_user.role = new_user.role
         old_user.update_time = update_time
         old_user.save()
+
+def check_email_existed(email):
+    email_check = User.object[:1](email=email)
+    if not email_check:
+        raise Exception("email not found")
+
