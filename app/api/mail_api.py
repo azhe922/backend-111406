@@ -15,7 +15,7 @@ message = ""
 
 # 發送驗證碼
 @api.route(f"{root_path}/code", methods=['POST'])
-def send_mail():
+def send_validcode_mail():
     data = request.get_json()
     otp = ''.join([str(randint(0,9)) for k in range(0, 6)])
     logger.info(f"email data: {data}")

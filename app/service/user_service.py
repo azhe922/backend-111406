@@ -6,7 +6,7 @@ import datetime
 from app.utils.jwt_token import generate_token
 
 
-def user_signup(userdata):
+def user_signup_service(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
     if user_id_check:
         raise Exception('此帳號已被註冊')
@@ -19,7 +19,7 @@ def user_signup(userdata):
         user.save()
 
 
-def user_login(userdata):
+def user_login_service(userdata):
     user_check = User.objects[:1](user_id=userdata['user_id'])
     if not user_check:
         raise Exception('查無此帳號')
@@ -28,14 +28,13 @@ def user_login(userdata):
             payload = {"user_id": user['user_id'], "_id": str(user['id']),
                        "email": user['email'], "role": user['role'].value, 
                        'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
-            print(payload)
             if compare_passwords(userdata['password'], user['password']):
                 return generate_token(payload)
             else:
                 return None
 
 
-def search_user():
+def search_user_service():
     users = []
     for user in User.objects:
         user_data = user.to_json()
@@ -48,7 +47,7 @@ def search_user():
     return users
 
 
-def get_by_id(user_id):
+def getuser_by_id_service(user_id):
     users = []
     for user in User.objects[:1](user_id=user_id):
         user_data = user.to_json()
@@ -60,7 +59,7 @@ def get_by_id(user_id):
     return users
 
 
-def update_user(user):
+def update_user_service(user):
     old_user = User.objects(user_id=user['user_id'])
     update_time = int(time.time())
     if old_user:
