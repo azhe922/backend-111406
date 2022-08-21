@@ -43,24 +43,23 @@ class ProductionConfig(Config):
         # mail_handler.setLevel(logging.ERROR)
         # app.logger.addHandler(mail_handler)
 
-# class HerokuConfig(ProductionConfig):
+class HerokuConfig(ProductionConfig):
 
-#     @classmethod
-#     def init_app(cls, app):
-#         ProductionConfig.init_app(app)
+    @classmethod
+    def init_app(cls, app):
+        ProductionConfig.init_app(app)
 
-#         # log to stderr
-#         import logging
-#         from logging import StreamHandler
-#         file_handler = StreamHandler()
-#         file_handler.setLevel(logging.INFO)
-#         app.logger.addHandler(file_handler)
+        # log to stderr
+        import logging
+        gunicorn_logger = logging.getLogger('gunicorn.error')
+        app.logger.handlers = gunicorn_logger.handlers
+        app.logger.setLevel(gunicorn_logger.level)
 
 
 config = {
     'development': Config,
     'production': ProductionConfig,
-    # 'heroku': HerokuConfig,
+    'heroku': HerokuConfig,
 
     'default': Config
 }
