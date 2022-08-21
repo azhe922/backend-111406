@@ -2,10 +2,11 @@ from flask import request, make_response
 from flask_mail import Message
 import logging
 from threading import Thread
-from initapp import mail
+from app import mail
 from . import api
 from random import randint
-from service.mail_service import get_code, add_valid_code
+from app.service.mail_service import get_code, add_valid_code
+from app.service.user_service import check_email_existed
 
 root_path = "/mail"
 logger = logging.getLogger(__name__)
@@ -14,18 +15,20 @@ message = ""
 
 # 發送驗證碼
 @api.route(f"{root_path}/code", methods=['POST'])
-def send_mail():
+def send_validcode_mail():
     data = request.get_json()
     otp = ''.join([str(randint(0,9)) for k in range(0, 6)])
     logger.info(f"email data: {data}")
     valid_body = f"您的驗證碼: {otp}"
     valid_title = "忘記密碼驗證信"
     try:
+        email = data['email']
         data['otp'] = otp
+        check_email_existed(email)
         
         #  使用多執行緒
         from application import app
-        thr = Thread(target=__send_async_email, args=[app, valid_title, data['email'], valid_body])
+        thr = Thread(target=__send_async_email, args=[app, valid_title, email, valid_body])
         thr.start()
         
         add_valid_code(data)

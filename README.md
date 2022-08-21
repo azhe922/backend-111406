@@ -27,10 +27,14 @@ source .venv/bin/activate
 ```
 
 3. 接著輸入`pip install -r requirements.txt`以下載所需套件
-4. 將`application.py`內的配置檔調整為開發模式
+4. 新增`.env`檔案並設定以下變數
 
-```python=
-app.config.from_object('config.Config')
+```
+email_username = "10846006@ntub.edu.tw"
+email_password = "zvgbvdgjrmjaackn"
+db_host = "mongodb+srv://backend:mtB5i2RUuWuSL2CK@cluster0.ftra1.mongodb.net/ntubapp"
+flask_config = "development"  //正式環境請設定為"production"
+token_secret = "ntubimdprojectbackend111406jwttokensecretkey"
 ```
 
 ## 專案啟動
@@ -42,6 +46,10 @@ app.config.from_object('config.Config')
     1. 切換目錄至專案根目錄
     2. 確認`application.py`內之DB連線字串
     3. 輸入`gcloud app deploy`, 接著輸入`Y`
+- gunicorn
+    1. 切換目錄至專案根目錄
+    2. 輸入`gunicorn --bind=0.0.0.0:8080 application:app`
+    3. 至`http://localhost:8080/api/user`確認是否成功啟動
 
 ## 專案負責人員
 
