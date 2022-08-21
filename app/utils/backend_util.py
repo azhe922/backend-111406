@@ -1,3 +1,4 @@
+import json
 
 def dict_to_json(data):
-    return str(data).replace("\'","\"")
+    return json.dumps(data)
