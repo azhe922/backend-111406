@@ -2,7 +2,7 @@ from flask import Flask
 from flask_cors import CORS
 from flask_mail import Mail
 from mongoengine import connect
-from config import config
+from app_config import config
 from dotenv import load_dotenv
 
 mail = Mail()
@@ -17,7 +17,7 @@ def create_app(config_name):
     connect(host=app.config['DB_HOST'])
     CORS(app)
 
-    from api import api as api_blueprint
+    from app.api import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
 
     return app

@@ -34,6 +34,7 @@ email_username = "10846006@ntub.edu.tw"
 email_password = "zvgbvdgjrmjaackn"
 db_host = "mongodb+srv://backend:mtB5i2RUuWuSL2CK@cluster0.ftra1.mongodb.net/ntubapp"
 flask_config = "development"  //正式環境請設定為"production"
+token_secret = "ntubimdprojectbackend111406jwttokensecretkey"
 ```
 
 ## 專案啟動

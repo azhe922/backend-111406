@@ -1,12 +1,15 @@
 from flask import request, make_response
-from service.user_service import signup_service, search_service, get_by_id_service, login_service
+from app.service.user_service import user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service
 import logging
 from . import api
+from app.utils.jwt_token import validate_token
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
 
 # 使用者註冊
+
+
 @api.route(f"{root_path}/signup", methods=['POST'])
 def signup():
     data = request.get_json()
@@ -14,8 +17,9 @@ def signup():
     status = 200
     logger.info(f"{data['user_id']} 使用者註冊: {data}")
     try:
-        signup_service(data)
+        user_signup_service(data)
         message = "註冊成功"
+        logger.info(f"{data['user_id']} {message}")
     except Exception as e:
         errMessage = str(e)
         status = 500
@@ -25,30 +29,38 @@ def signup():
     return response
 
 # 使用者登入
+
+
 @api.route(f"{root_path}/login", methods=['POST'])
 def login():
     data = request.get_json()
     message = ""
     status = 200
+    token = ""
     logger.info(f"{data['user_id']} 使用者登入")
     try:
-        message = "登入成功" if login_service(data) else "登入失敗，帳號或密碼錯誤"
+        token = user_login_service(data)
+        message = "登入成功" if token else "登入失敗，帳號或密碼錯誤"
     except Exception as e:
         errMessage = str(e)
         status = 500
         logger.error(errMessage)
-        message = "登入失敗，請稍後再試"
+        message = errMessage
     response = make_response({"message": message}, status)
+    response.headers['token'] = token
     return response
 
 # 查詢所有使用者
+
+
 @api.route(root_path, methods=['GET'])
-def search():
+@validate_token
+def search_user():
     result = []
     message = ""
     status = 200
     try:
-        result = search_service()
+        result = search_user_service()
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -59,13 +71,16 @@ def search():
     return response
 
 # 依ID查詢使用者
+
+
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
-def get_by_id(user_id):
+@validate_token
+def getuser_by_id(user_id):
     result = []
     message = ""
     status = 200
     try:
-        result = get_by_id_service(user_id)
+        result = getuser_by_id_service(user_id)
         message = "查詢成功"
     except Exception as e:
         errMessage = str(e)
@@ -73,4 +88,26 @@ def get_by_id(user_id):
         logger.error(errMessage)
         message = "查詢失敗，請稍後再試"
     response = make_response({"message": message, "data": result}, status)
+    return response
+
+# 使用者資料更新
+
+
+@api.route(f"{root_path}/update", methods=['POST'])
+@validate_token
+def update_user():
+    data = request.get_json()
+    message = ""
+    status = 200
+    logger.info(f"{data['user_id']} 使用者資料更新: {data}")
+    try:
+        update_user_service(data)
+        message = "更新成功"
+        logger.info(f"{data['user_id']} {message}")
+    except Exception as e:
+        errMessage = str(e)
+        status = 500
+        logger.error(errMessage)
+        message = "更新失敗，請稍後再試"
+    response = make_response({"message": message}, status)
     return response
