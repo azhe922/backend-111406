@@ -50,15 +50,13 @@ def search_user_service():
 
 
 def getuser_by_id_service(user_id):
-    users = []
     for user in User.objects[:1](user_id=user_id):
         user_data = user.to_json()
         user_data['create_time'] = dt.fromtimestamp(
             user.create_time).strftime('%Y-%m-%d %H:%M:%S')
         user_data['update_time'] = "" if user.update_time is None else dt.fromtimestamp(
             user.update_time).strftime('%Y-%m-%d %H:%M:%S')
-        users.append(user_data)
-    return users
+        return user_data
 
 
 def update_user_service(user):

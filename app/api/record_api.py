@@ -24,14 +24,16 @@ def add_record():
         data.pop('gender', None)
         data.pop('age', None)
         add_record_service(data)
+        data.pop('angles', None)
         message = "新增紀錄成功"
         logger.info(message)
     except Exception as e:
+        data = {}
         errMessage = str(e)
         status = 500
         logger.error(errMessage)
         message = "新增紀錄失敗，請稍後再試"
-    response = make_response({"message": message}, status)
+    response = make_response({"message": message, "data": data}, status)
     return response
 
 # 查詢所有測試紀錄
