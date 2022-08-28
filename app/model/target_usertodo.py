@@ -1,5 +1,6 @@
 from signal import default_int_handler
 from mongoengine import EmbeddedDocument, StringField, ListField, BooleanField
+import json
 
 
 class UserTodo(EmbeddedDocument):
@@ -23,3 +24,6 @@ class UserTodo(EmbeddedDocument):
     },{
         'times': 0
     }], max_length=3)
+
+    def to_json(self, *args, **kwargs):
+        return json.loads(super().to_json(*args, **kwargs))

@@ -1,6 +1,7 @@
+from calendar import weekday
 from app.model.target import Target
-from app.utils.backend_util import dict_to_json
-from app.model.target_usertodo import UserTodo
+from app.utils.backend_util import dict_to_json, get_week
+from datetime import datetime
 
 
 def add_target_service(target_data):
@@ -10,9 +11,17 @@ def add_target_service(target_data):
 
 
 def get_target_service(user_id):
+    now = datetime.now()
+    today = now.strftime('%Y%m%d')
+    this_week_days = [d.strftime('%Y%m%d') for d in get_week(now)]
     for target in Target.objects(user_id=user_id):
-        target_data = target.to_json()['user_todo']
-        return target_data
+        user_todos = target.user_todos
+        for i in range(len(user_todos)):
+            user_todo = user_todos[i]
+            target_date = user_todo.target_date
+            # 檢查是否有本周未完成的任務
+            if (not user_todo.complete) & (target_date in this_week_days) & (today > target_date):
+                yield user_todo.to_json()
 
 
 def update_target_times_service(user_id, target_date, data):

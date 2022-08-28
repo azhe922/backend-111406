@@ -21,5 +21,14 @@ def datetime_delta(dt, **kwargs):
         case 'microseconds':
             return dt + datetime.timedelta(microseconds=value)
 
+def get_week(date):
+    # turn sunday into 0, monday into 1, etc.
+    day_idx = 0 - (date.weekday() % 7)
+    sunday = datetime_delta(date, key='days', value=day_idx)
+    date = sunday
+    for n in range(7):
+        yield date
+        date = datetime_delta(date, key='days', value=1)
+
 def datetime_strf(time):
     return dt.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')

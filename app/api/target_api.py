@@ -35,11 +35,11 @@ def add_target():
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
 @validate_token
 def get_target(user_id):
-    result = {}
+    result = []
     message = ""
     status = 200
     try:
-        result = get_target_service(user_id)
+        result = [json for json in get_target_service(user_id)]
         message = "查詢訓練計劃表成功"
         logger.info(message)
     except Exception as e:
@@ -54,7 +54,6 @@ def get_target(user_id):
 @validate_token
 def update_target(user_id, target_date):
     data = request.get_json()
-    result = {}
     message = ""
     status = 200
     try:
