@@ -4,7 +4,7 @@ import time
 from datetime import datetime as dt
 import datetime
 from app.utils.jwt_token import generate_token
-from app.utils.backend_util import dict_to_json
+from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
 
 
 def user_signup_service(userdata):
@@ -29,7 +29,7 @@ def user_login_service(userdata):
         for user in user_check:
             payload = {"user_id": user['user_id'], "_id": str(user['id']),
                        "email": user['email'], "role": user['role'].value,
-                       'exp': datetime.datetime.utcnow() + datetime.timedelta(minutes=60)}
+                       'exp': datetime_delta(datetime.datetime.utcnow(), key='minutes', value=60)}
             if compare_passwords(userdata['password'], user['password']):
                 return generate_token(payload)
             else:
@@ -40,10 +40,8 @@ def search_user_service():
     users = []
     for user in User.objects:
         user_data = user.to_json()
-        user_data['create_time'] = dt.fromtimestamp(
-            user.create_time).strftime('%Y-%m-%d %H:%M:%S')
-        user_data['update_time'] = "" if user.update_time is None else dt.fromtimestamp(
-            user.update_time).strftime('%Y-%m-%d %H:%M:%S')
+        user_data['create_time'] = datetime_strf(user.create_time)
+        user_data['update_time'] = "" if user.update_time is None else datetime_strf(user.update_time)
         users.append(user_data)
 
     return users
@@ -52,10 +50,8 @@ def search_user_service():
 def getuser_by_id_service(user_id):
     for user in User.objects[:1](user_id=user_id):
         user_data = user.to_json()
-        user_data['create_time'] = dt.fromtimestamp(
-            user.create_time).strftime('%Y-%m-%d %H:%M:%S')
-        user_data['update_time'] = "" if user.update_time is None else dt.fromtimestamp(
-            user.update_time).strftime('%Y-%m-%d %H:%M:%S')
+        user_data['create_time'] = datetime_strf(user.create_time)
+        user_data['update_time'] = "" if user.update_time is None else datetime_strf(user.update_time)
         return user_data
 
 
