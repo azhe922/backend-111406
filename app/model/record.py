@@ -1,7 +1,7 @@
 from mongoengine import Document, StringField, IntField, ListField, EnumField
 
 from app.enums.training_part import TrainingPart
-
+import json
 
 class Record(Document):
     """
@@ -27,3 +27,9 @@ class Record(Document):
     test_result = StringField(max_length=5)
     pr = IntField(max_length=3)
     create_time = IntField()
+
+    def to_json(self, *args, **kwargs):
+        result = json.loads(super().to_json(*args, **kwargs))
+        result['part'] = self.part.description
+        return result
+

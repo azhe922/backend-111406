@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 @validate_token
 def add_record():
     data = request.get_json()
-    logger.info(f"record data: {data}")
     message = ""
     status = 200
     try:
@@ -24,14 +23,17 @@ def add_record():
         data.pop('gender', None)
         data.pop('age', None)
         add_record_service(data)
+        data.pop('angles', None)
+        data['difference'] = analyze['difference']
         message = "新增紀錄成功"
         logger.info(message)
     except Exception as e:
+        data = {}
         errMessage = str(e)
         status = 500
         logger.error(errMessage)
         message = "新增紀錄失敗，請稍後再試"
-    response = make_response({"message": message}, status)
+    response = make_response({"message": message, "data": data}, status)
     return response
 
 # 查詢所有測試紀錄
@@ -77,7 +79,6 @@ def __analyze_record(data):
             test_result = "待加強"
 
         result = {
-            "times": times,
             "pr": pr,
             "test_result": test_result
         }

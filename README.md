@@ -3,8 +3,8 @@
 ## 專案環境
 
 - 程式語言：Python
-- 版本：Python 3.9.8
-- 框架：Flask 2.0.3
+- 版本：Python 3.10.6
+- 框架：Flask 2.1.3
 - ORM：MongoEngine 0.24.1
 
 ## 專案設定
