@@ -36,7 +36,6 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
 
                 return function(*args, **kwargs)
             except Exception as e:
-                e.with_traceback()
                 return make_response({"message": "Invalid token provided"}, 403)
         return wrapper
         

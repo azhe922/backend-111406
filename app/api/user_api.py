@@ -40,7 +40,11 @@ def login():
     logger.info(f"{data['user_id']} 使用者登入")
     try:
         token = user_login_service(data)
-        message = "登入成功" if token else "登入失敗，帳號或密碼錯誤"
+        if token:
+            message = "登入成功"
+        else:
+            message = "登入失敗，帳號或密碼錯誤"
+            status = 500
     except Exception as e:
         errMessage = str(e)
         status = 500
