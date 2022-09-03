@@ -14,7 +14,7 @@ def get_target_service(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
     this_week_days = [d.strftime('%Y%m%d') for d in get_week(now)]
-    for target in Target.objects(user_id=user_id, end_date__lt=today):
+    for target in Target.objects(user_id=user_id, end_date__gt=today):
         result = []
         user_todos = target.user_todos
         for i in range(len(user_todos)):
