@@ -36,11 +36,11 @@ def add_record():
     response = make_response({"message": message, "data": data}, status)
     return response
 
-# 查詢所有測試紀錄
+# 查詢使用者所有測試紀錄
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
-@validate_token
+@validate_token(check_inperson=True)
 def search_record(user_id):
     result = []
     message = ""

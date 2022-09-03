@@ -54,7 +54,7 @@ def login():
 
 
 @api.route(root_path, methods=['GET'])
-@validate_token
+@validate_token(has_role=200)
 def search_user():
     result = []
     message = ""
@@ -74,7 +74,7 @@ def search_user():
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
-@validate_token
+@validate_token(check_inperson=True)
 def getuser_by_id(user_id):
     result = []
     message = ""
@@ -94,7 +94,7 @@ def getuser_by_id(user_id):
 
 
 @api.route(f"{root_path}/update", methods=['POST'])
-@validate_token
+@validate_token(check_inperson=True)
 def update_user():
     data = request.get_json()
     message = ""
