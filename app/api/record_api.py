@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @api.route(root_path, methods=['POST'])
-@validate_token
+@validate_token()
 def add_record():
     data = request.get_json()
     message = ""
@@ -48,6 +48,7 @@ def search_record(user_id):
     try:
         result = search_record_service(user_id)
         message = "查詢成功"
+        logger.info(message)
     except Exception as e:
         errMessage = str(e)
         status = 500

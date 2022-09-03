@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 @api.route(root_path, methods=['POST'])
-@validate_token
+@validate_token()
 def add_target():
     data = request.get_json()
     logger.info(f"target data: {data}")
@@ -33,7 +33,7 @@ def add_target():
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
-@validate_token
+@validate_token()
 def get_target(user_id):
     result = []
     message = ""
@@ -51,7 +51,7 @@ def get_target(user_id):
     return response
 
 @api.route(f"{root_path}/<user_id>/<target_date>", methods=['PATCH'])
-@validate_token
+@validate_token(check_inperson=True)
 def update_target(user_id, target_date):
     data = request.get_json()
     message = ""
