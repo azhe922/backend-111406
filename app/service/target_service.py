@@ -14,14 +14,18 @@ def get_target_service(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
     this_week_days = [d.strftime('%Y%m%d') for d in get_week(now)]
-    for target in Target.objects(user_id=user_id):
+    for target in Target.objects(user_id=user_id, end_date__lt=today):
+        result = []
         user_todos = target.user_todos
         for i in range(len(user_todos)):
             user_todo = user_todos[i]
             target_date = user_todo.target_date
             # 檢查是否有本周未完成的任務
-            if (not user_todo.complete) & (target_date in this_week_days) & (today > target_date):
-                yield user_todo.to_json()
+            if (not user_todo.complete) & (target_date in this_week_days) & (today >= target_date):
+                result.append(user_todo.to_json())
+        return result
+    return False
+
 
 
 def update_target_times_service(user_id, target_date, data):

@@ -39,7 +39,7 @@ def get_target(user_id):
     message = ""
     status = 200
     try:
-        result = [json for json in get_target_service(user_id)]
+        result = get_target_service(user_id)
         message = "查詢訓練計劃表成功"
         logger.info(message)
     except Exception as e:
