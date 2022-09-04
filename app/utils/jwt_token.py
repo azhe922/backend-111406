@@ -52,3 +52,25 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
     if original_function:
         _decorate.__name__ = original_function.__name__
     return _decorate
+
+def validate_change_pwd_token(function):
+    @wraps(function)
+    def wrapper(*args, **kwargs):
+        try:
+            token = request.headers['token']
+        except:
+            (body, status) = TokenNotProvidedException.get_response_body()
+            return make_response(body, status)
+
+        try:
+            payload = jwt.decode(token, secret, algorithms=["HS256"])
+            email = payload['email']
+            json = request.get_json()
+            if json['email'] != email:
+                (body, status) = AuthNotEnoughException.get_response_body()
+                return make_response(body, status)
+            return function(*args, **kwargs) 
+        except:
+            (body, status) = InvalidTokenProvidedException.get_response_body()
+            return make_response(body, status)
+    return wrapper

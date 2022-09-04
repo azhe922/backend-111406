@@ -1,7 +1,6 @@
 from app.model.user import User
 from app.utils.password_encryption import encrypt_password, compare_passwords
 import time
-from datetime import datetime as dt
 import datetime
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
@@ -79,3 +78,13 @@ def check_email_existed(email):
     email_check = User.objects[:1](email=email)
     if not email_check:
         raise NotFoundEmailException()
+
+def update_pwd_service(userdata):
+    user = User.objects(email=userdata['email'])
+    update_time = int(time.time())
+    if user:
+        user = user.get(email=userdata['email'])
+        user.update_time = update_time
+        user.password = encrypt_password(
+            userdata['password']).decode("utf-8")
+        user.save()

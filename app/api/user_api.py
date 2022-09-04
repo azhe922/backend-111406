@@ -1,8 +1,8 @@
 from flask import request, make_response
-from app.service.user_service import user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service
+from app.service.user_service import user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service
 import logging
 from . import api
-from app.utils.jwt_token import validate_token
+from app.utils.jwt_token import validate_token, validate_change_pwd_token
 from app.utils.backend_error import LoginFailedException, BackendException
 
 root_path = "/user"
@@ -122,5 +122,27 @@ def update_user():
         (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     return response
+
+# 修改密碼
+
+
+@api.route(f"{root_path}/update/password", methods=['POST'])
+@validate_change_pwd_token
+def update_pwd():
+    data = request.get_json()
+    message = ""
+    status = 200
+    logger.info(f"{data['email']} 修改密碼")
+    try:        
+        update_pwd_service(data)
+        message = "更新成功"
+        logger.info(message)
+    except Exception as e:
+        e.with_traceback()
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     return response

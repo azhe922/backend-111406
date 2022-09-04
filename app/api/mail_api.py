@@ -51,10 +51,13 @@ def send_validcode_mail():
 @api.route(f'{root_path}/validate', methods=["POST"])
 def validate():
     data = request.get_json()
+    token = ""
     try:
-        otp = get_code(data['email'])
-        message = "驗證成功" if otp == data['otp'] else "驗證碼錯誤"
-        status = 200         
+        (otp, token) = get_code(data['email'])
+        if otp != data['otp']:
+            raise IncorrectOtpException()        
+        message = "驗證成功"
+        status = 200
         logger.info(message)
     except Exception as e:
         match e.__class__.__name__:
@@ -65,6 +68,7 @@ def validate():
                 e = BackendException()
         (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
+    response.headers['token'] = token
     return response
 
 
