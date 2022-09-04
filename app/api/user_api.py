@@ -3,7 +3,7 @@ from app.service.user_service import user_signup_service, search_user_service, g
 import logging
 from . import api
 from app.utils.jwt_token import validate_token, validate_change_pwd_token
-from app.utils.backend_error import LoginFailedException, BackendException
+from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -23,6 +23,8 @@ def signup():
         logger.info(f"{data['user_id']} {message}")
     except Exception as e:
         match e.__class__.__name__:
+            case UserIdOrEmailAlreadyExistedException.__name__:
+                pass
             case _:
                 logger.error(str(e))
                 e = BackendException()

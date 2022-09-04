@@ -4,14 +4,14 @@ import time
 import datetime
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
-from app.utils.backend_error import NotFoundEmailException
+from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException
 
 
 def user_signup_service(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
     email_check = User.objects[:1](email=userdata['email'])
     if user_id_check or email_check:
-        raise Exception('此帳號或email已被註冊')
+        raise UserIdOrEmailAlreadyExistedException()
     else:
         userdata['password'] = encrypt_password(
             userdata['password']).decode("utf-8")

@@ -47,27 +47,38 @@ class LoginFailedException(BackendException):
     body = {"message": message}
     status = 500
 
+
 class ExpiredOtpException(BackendException):
     message = "驗證碼過期，請重新驗證"
     body = {"message": message}
     status = 500
+
 
 class IncorrectOtpException(BackendException):
     message = "驗證碼錯誤"
     body = {"message": message}
     status = 500
 
+
 class OtherOtpException(BackendException):
     message = "請重新發送驗證碼"
     body = {"message": message}
     status = 500
+
 
 class NotFoundEmailException(BackendException):
     message = "查無此email"
     body = {"message": message}
     status = 500
 
+
 class NotFoundUseridException(BackendException):
     message = "查無此使用者帳號"
+    body = {"message": message}
+    status = 500
+
+
+class UserIdOrEmailAlreadyExistedException(BaseException):
+    message = "此帳號或email已被註冊"
     body = {"message": message}
     status = 500
