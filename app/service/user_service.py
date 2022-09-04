@@ -10,7 +10,7 @@ from app.utils.backend_error import NotFoundEmailException
 def user_signup_service(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
     email_check = User.objects[:1](email=userdata['email'])
-    if user_id_check | email_check:
+    if user_id_check or email_check:
         raise Exception('此帳號或email已被註冊')
     else:
         userdata['password'] = encrypt_password(
