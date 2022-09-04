@@ -18,8 +18,8 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
         def wrapper(*args, **kwargs):
             try:
                 token = request.headers['token']
-            except Exception as e:
-                (body, status) = TokenNotProvidedException.get_response_data()
+            except:
+                (body, status) = TokenNotProvidedException.get_response_body()
                 return make_response(body, status)
 
             try:
@@ -30,7 +30,7 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
                 # 使用者權限判斷
                 if has_role:
                     if user_role < has_role:
-                        (body, status) = AuthNotEnoughException.get_response_data()
+                        (body, status) = AuthNotEnoughException.get_response_body()
                         return make_response(body, status)
 
                 # 非管理員之角色才須個別判斷
@@ -39,12 +39,12 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
                     # 是否為本人
                     if check_inperson:
                         if user_id not in current_path and user_role < UserRole.doctor.value:
-                            (body, status) = AuthNotEnoughException.get_response_data()
+                            (body, status) = AuthNotEnoughException.get_response_body()
                             return make_response(body, status)
 
                 return function(*args, **kwargs)
-            except Exception as e:
-                (body, status) = InvalidTokenProvidedException.get_response_data()
+            except:
+                (body, status) = InvalidTokenProvidedException.get_response_body()
                 return make_response(body, status)
         return wrapper
 

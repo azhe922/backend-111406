@@ -3,6 +3,7 @@ from app.service.user_service import user_signup_service, search_user_service, g
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
+from app.utils.backend_error import LoginFailedException, BackendException
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -21,10 +22,11 @@ def signup():
         message = "註冊成功"
         logger.info(f"{data['user_id']} {message}")
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "註冊失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     return response
 
@@ -43,13 +45,15 @@ def login():
         if token:
             message = "登入成功"
         else:
-            message = "登入失敗，帳號或密碼錯誤"
-            status = 500
+            raise LoginFailedException()
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = errMessage
+        match e.__class__.__name__:
+            case LoginFailedException.__name__:
+                pass
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     response.headers['token'] = token
     return response
@@ -67,10 +71,11 @@ def search_user():
         result = search_user_service()
         message = "查詢成功"
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "查詢失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message, "data": result}, status)
     return response
 
@@ -87,10 +92,11 @@ def getuser_by_id(user_id):
         result = getuser_by_id_service(user_id)
         message = "查詢成功"
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "查詢失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message, "data": result}, status)
     return response
 
@@ -104,14 +110,17 @@ def update_user():
     message = ""
     status = 200
     logger.info(f"{data['user_id']} 使用者資料更新: {data}")
-    try:
+    try:        
         update_user_service(data)
         message = "更新成功"
         logger.info(f"{data['user_id']} {message}")
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "更新失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
+    response = make_response({"message": message}, status)
+    return response
     response = make_response({"message": message}, status)
     return response

@@ -1,4 +1,5 @@
 from app.model.validcode import ValidCode
+from app.utils.backend_error import ExpiredOtpException, OtherOtpException
 import time
 
 def add_valid_code(data):
@@ -24,7 +25,7 @@ def get_code(email):
         valid_code = valid_code.get(email=email)
         otp = valid_code.otp
         if valid_time - valid_code.create_time > 300:
-            raise Exception("the otp code is expired")
+            raise ExpiredOtpException()
     else:
         raise Exception("no data")
     return otp

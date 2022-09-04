@@ -5,12 +5,14 @@ from datetime import datetime as dt
 import datetime
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
+from app.utils.backend_error import NotFoundEmailException
 
 
 def user_signup_service(userdata):
     user_id_check = User.objects[:1](user_id=userdata['user_id'])
-    if user_id_check:
-        raise Exception('此帳號已被註冊')
+    email_check = User.objects[:1](email=userdata['email'])
+    if user_id_check | email_check:
+        raise Exception('此帳號或email已被註冊')
     else:
         userdata['password'] = encrypt_password(
             userdata['password']).decode("utf-8")
@@ -72,7 +74,8 @@ def update_user_service(user):
         old_user.save()
 
 
+
 def check_email_existed(email):
-    email_check = User.object[:1](email=email)
+    email_check = User.objects[:1](email=email)
     if not email_check:
-        raise Exception("email not found")
+        raise NotFoundEmailException()

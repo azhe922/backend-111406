@@ -1,27 +1,35 @@
-from email import message
-
-
 class BackendException(Exception):
-    def __init__(self) -> None:
-        pass
+    message = "伺服器端錯誤，請稍後再試"
+    body = {"message": message}
+    status = 500
 
     @classmethod
-    def get_response_data(self):
+    def get_response_body(self):
+        return (self.body, self.status)
+
+    @classmethod
+    def get_response_message(self):
         return (self.message, self.status)
+
+    def __str__(self) -> str:
+        return self.message
 
 
 class TokenNotProvidedException(BackendException):
     """
     未提供 token
     """
-    message = {"message": "Token not provided"}
+    message = "Token not provided"
+    body = {"message": message}
     status = 403
+
 
 class AuthNotEnoughException(BackendException):
     """
     權限不足
     """
-    message = {"message": "Authentication is not enough"}
+    message = "Authentication is not enough"
+    body = {"message": message}
     status = 403
 
 
@@ -29,9 +37,37 @@ class InvalidTokenProvidedException(BackendException):
     """
     token 格式錯誤
     """
-    message = {"message": "Invalid token provided"}
+    message = "Invalid token provided"
+    body = {"message": message}
     status = 403
 
+
 class LoginFailedException(BackendException):
-    message = {"message": "登入失敗，帳號或密碼錯誤"}
+    message = "登入失敗，帳號或密碼錯誤"
+    body = {"message": message}
+    status = 500
+
+class ExpiredOtpException(BackendException):
+    message = "驗證碼過期，請重新驗證"
+    body = {"message": message}
+    status = 500
+
+class IncorrectOtpException(BackendException):
+    message = "驗證碼錯誤"
+    body = {"message": message}
+    status = 500
+
+class OtherOtpException(BackendException):
+    message = "請重新發送驗證碼"
+    body = {"message": message}
+    status = 500
+
+class NotFoundEmailException(BackendException):
+    message = "查無此email"
+    body = {"message": message}
+    status = 500
+
+class NotFoundUseridException(BackendException):
+    message = "查無此使用者帳號"
+    body = {"message": message}
     status = 500
