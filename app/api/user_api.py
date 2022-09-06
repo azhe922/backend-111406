@@ -140,7 +140,6 @@ def update_pwd():
         message = "更新成功"
         logger.info(message)
     except Exception as e:
-        e.with_traceback()
         match e.__class__.__name__:
             case _:
                 logger.error(str(e))
