@@ -18,14 +18,14 @@ def add_record():
     message = ""
     status = 200
     try:
-        analyze = __analyze_record(data)
+        (analyze, has_record) = __analyze_record(data)
         data['pr'] = analyze['pr']
         data['test_result'] = analyze['test_result']
         data.pop('gender', None)
         data.pop('age', None)
         add_record_service(data)
         data.pop('angles', None)
-        data['difference'] = analyze['difference']
+        data['difference'] = analyze['difference'] if has_record else None
         message = "新增紀錄成功"
         logger.info(message)
     except Exception as e:
@@ -67,8 +67,9 @@ def __analyze_record(data):
     # the parameters like (user_id, age, part, gender, times)
     data = request.get_json()
     result = {}
+    has_record = False
     standard = get_standard_times_service(data)
-    record = search_record_service(data['user_id'], True)
+    record = search_record_service(data['user_id'], data['part'], True)
     times = data['times']
     compare = [s for s in standard if times >= s]
     difference = times - record[0]['times'] if len(record) > 0 else -999
@@ -86,6 +87,7 @@ def __analyze_record(data):
         "test_result": test_result
     }
     if difference > -100:
+        has_record = True
         result["difference"] = difference
     logger.info("分析成功")
-    return result
+    return (result, has_record)
