@@ -4,7 +4,8 @@ import time
 import datetime
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
-from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException
+from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException
+from app.model.user_loginrecord import UserLoginRecord
 
 
 def user_signup_service(userdata):
@@ -23,18 +24,28 @@ def user_signup_service(userdata):
 
 
 def user_login_service(userdata):
-    user_check = User.objects[:1](user_id=userdata['user_id'])
+    user_id = userdata['user_id']
+    user_check = User.objects[:1](user_id=user_id)
     if not user_check:
-        raise Exception('查無此帳號')
+        raise NotFoundUseridException()
     else:
-        for user in user_check:
-            payload = {"user_id": user['user_id'], "_id": str(user['id']),
-                       "email": user['email'], "role": user['role'].value,
-                       'exp': datetime_delta(datetime.datetime.utcnow(), key='minutes', value=60)}
-            if compare_passwords(userdata['password'], user['password']):
-                return generate_token(payload)
+        user = user_check.get(user_id=user_id)
+        if compare_passwords(userdata['password'], user.password):
+            token = __get_token(user_id)
+            now = int(time.time())
+
+            login_record = UserLoginRecord.objects(user_id=user.user_id)
+            if login_record:
+                login_record = login_record[0]
+                login_record.token = token
+                login_record.login_time = now
             else:
-                return None
+                login_record = UserLoginRecord(
+                    user_id=user.user_id, token=token, login_time=now)
+            login_record.save()
+            return token
+        else:
+            return None
 
 
 def search_user_service():
@@ -42,7 +53,8 @@ def search_user_service():
     for user in User.objects:
         user_data = user.to_json()
         user_data['create_time'] = datetime_strf(user.create_time)
-        user_data['update_time'] = "" if user.update_time is None else datetime_strf(user.update_time)
+        user_data['update_time'] = "" if user.update_time is None else datetime_strf(
+            user.update_time)
         users.append(user_data)
 
     return users
@@ -52,7 +64,8 @@ def getuser_by_id_service(user_id):
     for user in User.objects[:1](user_id=user_id):
         user_data = user.to_json()
         user_data['create_time'] = datetime_strf(user.create_time)
-        user_data['update_time'] = "" if user.update_time is None else datetime_strf(user.update_time)
+        user_data['update_time'] = "" if user.update_time is None else datetime_strf(
+            user.update_time)
         return user_data
 
 
@@ -73,11 +86,11 @@ def update_user_service(user):
         old_user.save()
 
 
-
 def check_email_existed(email):
     email_check = User.objects[:1](email=email)
     if not email_check:
         raise NotFoundEmailException()
+
 
 def update_pwd_service(userdata):
     user = User.objects(email=userdata['email'])
@@ -88,3 +101,23 @@ def update_pwd_service(userdata):
         user.password = encrypt_password(
             userdata['password']).decode("utf-8")
         user.save()
+
+
+def check_user_token(token):
+    login_record = UserLoginRecord.objects(token=token)
+    if login_record:
+        login_record = login_record.get(token=token)
+        user_id = login_record.user_id
+        new_token = __get_token(user_id)
+        login_record.token = new_token
+        login_record.login_time = int(time.time())
+        login_record.save()
+        return new_token
+
+
+def __get_token(user_id):
+    user = User.objects.get(user_id=user_id)
+    payload = {"user_id": user.user_id, "_id": str(user.id),
+               "email": user.email, "role": user.role.value,
+               'exp': datetime_delta(datetime.datetime.utcnow(), key='minutes', value=60)}
+    return generate_token(payload)

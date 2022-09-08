@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, g
 from flask_cors import CORS
 from flask_mail import Mail
 from mongoengine import connect
@@ -19,5 +19,8 @@ def create_app(config_name):
 
     from app.api import api as api_blueprint
     app.register_blueprint(api_blueprint, url_prefix='/api')
+
+    with app.app_context():
+        g.setdefault("token", None)
 
     return app

@@ -1,15 +1,17 @@
-import jwt
 import os
-from flask import make_response, request
+import logging
+from flask import make_response, request, g
 from functools import wraps
 from app.utils.backend_error import TokenNotProvidedException, AuthNotEnoughException, InvalidTokenProvidedException
 from app.enums.user_role import UserRole
+from jwt import ExpiredSignatureError, encode, decode
 
 secret = os.getenv('token_secret')
+logger = logging.getLogger(__name__)
 
 
 def generate_token(payload):
-    return jwt.encode(payload, secret, algorithm="HS256")
+    return encode(payload, secret, algorithm="HS256")
 
 
 def validate_token(original_function=None, *, has_role=None, check_inperson=None):
@@ -17,34 +19,41 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
         @wraps(function)
         def wrapper(*args, **kwargs):
             try:
-                token = request.headers['token']
-            except:
-                (body, status) = TokenNotProvidedException.get_response_body()
-                return make_response(body, status)
-
-            try:
-                payload = jwt.decode(token, secret, algorithms=["HS256"])
-                user_role = payload['role']
-                user_id = payload['user_id']
+                token = request.headers.get("token")
+                if not token:
+                    raise TokenNotProvidedException()
+                payload = decode(token, secret, algorithms=["HS256"])
 
                 # 使用者權限判斷
-                if has_role:
-                    if user_role < has_role:
-                        (body, status) = AuthNotEnoughException.get_response_body()
-                        return make_response(body, status)
+                __check_role(payload, has_role)
 
                 # 非管理員之角色才須個別判斷
-                if user_role != UserRole.manager.value:
-                    current_path = request.path
-                    # 是否為本人
-                    if check_inperson:
-                        if user_id not in current_path and user_role < UserRole.doctor.value:
-                            (body, status) = AuthNotEnoughException.get_response_body()
-                            return make_response(body, status)
+                __check_inperson(payload, check_inperson)
 
                 return function(*args, **kwargs)
-            except:
-                (body, status) = InvalidTokenProvidedException.get_response_body()
+            except ExpiredSignatureError:
+                from app.service.user_service import check_user_token
+
+                new_token = check_user_token(token)
+                if new_token:
+                    payload = decode(new_token, secret, algorithms=["HS256"])
+
+                    # 使用者權限判斷
+                    __check_role(payload, has_role)
+
+                    # 非管理員之角色才須個別判斷
+                    __check_inperson(payload, check_inperson)
+
+                    g.token = new_token
+                    return function(*args, **kwargs)
+            except Exception as e:
+                match (e.__class__.__name__):
+                    case AuthNotEnoughException.__name__ | TokenNotProvidedException.__name__:
+                        pass
+                    case _:
+                        logger.error(str(e))
+                        e = InvalidTokenProvidedException()
+                (body, status) = e.get_response_body()
                 return make_response(body, status)
         return wrapper
 
@@ -53,24 +62,46 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
         _decorate.__name__ = original_function.__name__
     return _decorate
 
+
 def validate_change_pwd_token(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
         try:
-            token = request.headers['token']
-        except:
-            (body, status) = TokenNotProvidedException.get_response_body()
-            return make_response(body, status)
-
-        try:
-            payload = jwt.decode(token, secret, algorithms=["HS256"])
+            token = request.headers.get("token")
+            if not token:
+                raise TokenNotProvidedException()
+            payload = decode(token, secret, algorithms=["HS256"])
             email = payload['email']
             json = request.get_json()
+
             if json['email'] != email:
-                (body, status) = AuthNotEnoughException.get_response_body()
-                return make_response(body, status)
-            return function(*args, **kwargs) 
-        except:
-            (body, status) = InvalidTokenProvidedException.get_response_body()
+                raise AuthNotEnoughException()
+
+            return function(*args, **kwargs)
+        except Exception as e:
+            match (e.__class__.__name__):
+                case AuthNotEnoughException.__name__ | TokenNotProvidedException.__name__:
+                    pass
+                case _:
+                    e = InvalidTokenProvidedException()
+            (body, status) = e.get_response_body()
             return make_response(body, status)
     return wrapper
+
+
+def __check_role(payload, has_role):
+    user_role = payload['role']
+    if has_role:
+        if user_role < has_role:
+            raise AuthNotEnoughException()
+
+
+def __check_inperson(payload, check_inperson):
+    user_role = payload['role']
+    user_id = payload['user_id']
+    if user_role != UserRole.manager.value:
+        current_path = request.path
+        # 是否為本人
+        if check_inperson:
+            if user_id not in current_path and user_role < UserRole.doctor.value:
+                raise AuthNotEnoughException()
