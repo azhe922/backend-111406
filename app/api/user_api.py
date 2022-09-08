@@ -2,8 +2,8 @@ from flask import request, make_response
 from app.service.user_service import user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service
 import logging
 from . import api
-from app.utils.jwt_token import validate_token, validate_change_pwd_token
-from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException
+from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
+from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -44,13 +44,10 @@ def login():
     logger.info(f"{data['user_id']} 使用者登入")
     try:
         token = user_login_service(data)
-        if token:
-            message = "登入成功"
-        else:
-            raise LoginFailedException()
+        message = "登入成功"
     except Exception as e:
         match e.__class__.__name__:
-            case LoginFailedException.__name__:
+            case LoginFailedException.__name__ | NotFoundUseridException.__name__:
                 pass
             case _:
                 logger.error(str(e))
@@ -112,7 +109,7 @@ def update_user():
     message = ""
     status = 200
     logger.info(f"{data['user_id']} 使用者資料更新: {data}")
-    try:        
+    try:
         update_user_service(data)
         message = "更新成功"
         logger.info(f"{data['user_id']} {message}")
@@ -129,13 +126,38 @@ def update_user():
 
 
 @api.route(f"{root_path}/update/password", methods=['POST'])
-@validate_change_pwd_token
+@validate_token(check_inperson=True)
 def update_pwd():
     data = request.get_json()
     message = ""
     status = 200
+    logger.info(f"{data['user_id']} 修改密碼")
+    try:
+        update_pwd_service(data)
+        message = "更新成功"
+        logger.info(message)
+    except Exception as e:
+        match e.__class__.__name__:
+            case PasswordIncorrectException.__name__:
+                pass
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
+    response = make_response({"message": message}, status)
+    return response
+
+# 忘記密碼修改
+
+
+@api.route(f"{root_path}/update/forget/password", methods=['POST'])
+@validate_change_forget_pwd_token
+def update_forget_pwd():
+    data = request.get_json()
+    message = ""
+    status = 200
     logger.info(f"{data['email']} 修改密碼")
-    try:        
+    try:
         update_pwd_service(data)
         message = "更新成功"
         logger.info(message)

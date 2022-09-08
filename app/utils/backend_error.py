@@ -82,3 +82,8 @@ class UserIdOrEmailAlreadyExistedException(BaseException):
     message = "此帳號或email已被註冊"
     body = {"message": message}
     status = 500
+
+class PasswordIncorrectException(BaseException):
+    message = "輸入密碼與舊密碼不相符"
+    body = {"message": message}
+    status = 500

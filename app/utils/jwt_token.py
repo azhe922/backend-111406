@@ -63,7 +63,7 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
     return _decorate
 
 
-def validate_change_pwd_token(function):
+def validate_change_forget_pwd_token(function):
     @wraps(function)
     def wrapper(*args, **kwargs):
         try:
@@ -83,6 +83,7 @@ def validate_change_pwd_token(function):
                 case AuthNotEnoughException.__name__ | TokenNotProvidedException.__name__:
                     pass
                 case _:
+                    logger.error(str(e))
                     e = InvalidTokenProvidedException()
             (body, status) = e.get_response_body()
             return make_response(body, status)
@@ -99,9 +100,10 @@ def __check_role(payload, has_role):
 def __check_inperson(payload, check_inperson):
     user_role = payload['role']
     user_id = payload['user_id']
+    request_body = request.get_json()
     if user_role != UserRole.manager.value:
         current_path = request.path
         # 是否為本人
         if check_inperson:
-            if user_id not in current_path and user_role < UserRole.doctor.value:
+            if user_id not in current_path and user_id not in request_body.values() and user_role < UserRole.doctor.value:
                 raise AuthNotEnoughException()

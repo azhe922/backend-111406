@@ -4,7 +4,7 @@ import time
 import datetime
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
-from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException
+from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, LoginFailedException, PasswordIncorrectException
 from app.model.user_loginrecord import UserLoginRecord
 
 
@@ -45,7 +45,7 @@ def user_login_service(userdata):
             login_record.save()
             return token
         else:
-            return None
+            raise LoginFailedException()
 
 
 def search_user_service():
@@ -93,14 +93,25 @@ def check_email_existed(email):
 
 
 def update_pwd_service(userdata):
-    user = User.objects(email=userdata['email'])
     update_time = int(time.time())
-    if user:
-        user = user.get(email=userdata['email'])
+    if "email" in userdata.keys():
+        user = User.objects.get(email=userdata['email'])
         user.update_time = update_time
         user.password = encrypt_password(
             userdata['password']).decode("utf-8")
         user.save()
+    else:
+        user = User.objects.get(user_id=userdata['user_id'])
+        if compare_passwords(userdata['old_password'], user.password):
+            user.password = encrypt_password(
+                userdata['new_password']).decode("utf-8")
+            user.update_time = update_time
+            user.save()
+        else:
+            raise PasswordIncorrectException()
+        
+
+
 
 
 def check_user_token(token):
