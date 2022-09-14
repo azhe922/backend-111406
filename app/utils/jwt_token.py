@@ -72,9 +72,8 @@ def validate_change_forget_pwd_token(function):
                 raise TokenNotProvidedException()
             payload = decode(token, secret, algorithms=["HS256"])
             email = payload['email']
-            json = request.get_json()
 
-            if json['email'] != email:
+            if email not in request.path:
                 raise AuthNotEnoughException()
 
             return function(*args, **kwargs)
@@ -100,10 +99,9 @@ def __check_role(payload, has_role):
 def __check_inperson(payload, check_inperson):
     user_role = payload['role']
     user_id = payload['user_id']
-    request_body = request.get_json()
     if user_role != UserRole.manager.value:
         current_path = request.path
         # 是否為本人
         if check_inperson:
-            if user_id not in current_path and user_id not in request_body.values() and user_role < UserRole.doctor.value:
+            if user_id not in current_path and user_role < UserRole.doctor.value:
                 raise AuthNotEnoughException()

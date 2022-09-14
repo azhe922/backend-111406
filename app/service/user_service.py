@@ -69,11 +69,11 @@ def getuser_by_id_service(user_id):
         return user_data
 
 
-def update_user_service(user):
-    old_user = User.objects(user_id=user['user_id'])
+def update_user_service(user, user_id):
+    old_user = User.objects(user_id=user_id)
     update_time = int(time.time())
     if old_user:
-        old_user = old_user.get(user_id=user['user_id'])
+        old_user = old_user.get(user_id=user_id)
         userdata_json = dict_to_json(user)
         new_user = User().from_json(userdata_json)
         old_user.email = new_user.email
@@ -92,16 +92,16 @@ def check_email_existed(email):
         raise NotFoundEmailException()
 
 
-def update_pwd_service(userdata):
+def update_pwd_service(userdata, query_index):
     update_time = int(time.time())
     if "email" in userdata.keys():
-        user = User.objects.get(email=userdata['email'])
+        user = User.objects.get(email=query_index)
         user.update_time = update_time
         user.password = encrypt_password(
             userdata['password']).decode("utf-8")
         user.save()
     else:
-        user = User.objects.get(user_id=userdata['user_id'])
+        user = User.objects.get(user_id=query_index)
         if compare_passwords(userdata['old_password'], user.password):
             user.password = encrypt_password(
                 userdata['new_password']).decode("utf-8")

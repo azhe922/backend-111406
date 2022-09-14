@@ -102,15 +102,15 @@ def getuser_by_id(user_id):
 # 使用者資料更新
 
 
-@api.route(f"{root_path}/update", methods=['POST'])
+@api.route(f"{root_path}/update/<user_id>", methods=['POST'])
 @validate_token(check_inperson=True)
-def update_user():
+def update_user(user_id):
     data = request.get_json()
     message = ""
     status = 200
-    logger.info(f"{data['user_id']} 使用者資料更新: {data}")
+    logger.info(f"{user_id} 使用者資料更新: {data}")
     try:
-        update_user_service(data)
+        update_user_service(data, user_id)
         message = "更新成功"
         logger.info(f"{data['user_id']} {message}")
     except Exception as e:
@@ -125,15 +125,15 @@ def update_user():
 # 修改密碼
 
 
-@api.route(f"{root_path}/update/password", methods=['POST'])
+@api.route(f"{root_path}/update/password/<user_id>", methods=['POST'])
 @validate_token(check_inperson=True)
-def update_pwd():
+def update_pwd(user_id):
     data = request.get_json()
     message = ""
     status = 200
-    logger.info(f"{data['user_id']} 修改密碼")
+    logger.info(f"{user_id} 修改密碼")
     try:
-        update_pwd_service(data)
+        update_pwd_service(data, user_id)
         message = "更新成功"
         logger.info(message)
     except Exception as e:
@@ -150,15 +150,15 @@ def update_pwd():
 # 忘記密碼修改
 
 
-@api.route(f"{root_path}/update/forget/password", methods=['POST'])
+@api.route(f"{root_path}/update/forget/password/<email>", methods=['POST'])
 @validate_change_forget_pwd_token
-def update_forget_pwd():
+def update_forget_pwd(email):
     data = request.get_json()
     message = ""
     status = 200
-    logger.info(f"{data['email']} 修改密碼")
+    logger.info(f"{email} 修改密碼")
     try:
-        update_pwd_service(data)
+        update_pwd_service(data, email)
         message = "更新成功"
         logger.info(message)
     except Exception as e:
