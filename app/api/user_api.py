@@ -112,7 +112,7 @@ def update_user(user_id):
     try:
         update_user_service(data, user_id)
         message = "更新成功"
-        logger.info(f"{data['user_id']} {message}")
+        logger.info(f"{user_id} {message}")
     except Exception as e:
         match e.__class__.__name__:
             case _:
