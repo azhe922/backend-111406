@@ -76,9 +76,9 @@ def update_user_service(user, user_id):
         old_user = old_user.get(user_id=user_id)
         userdata_json = dict_to_json(user)
         new_user = User().from_json(userdata_json)
-        old_user.email = new_user.email
         old_user.height = new_user.height
         old_user.weight = new_user.weight
+        old_user.birthday = new_user.birthday
         old_user.update_time = update_time
         old_user.save()
 
