@@ -21,7 +21,7 @@ def get_target_service(user_id):
             user_todo = user_todos[i]
             target_date = user_todo.target_date
             # 檢查是否有本周未完成的任務
-            if (not user_todo.complete) & (target_date in this_week_days) & (today >= target_date):
+            if (not user_todo.complete) and (target_date in this_week_days) and (today >= target_date):
                 result.append(user_todo.to_json())
         return result
     return False
@@ -53,7 +53,7 @@ def update_target_times_service(user_id, target_date, data):
                         case 0 | 1:
                             check_complete = [at['times'] for at in [*actual_times[k].values()] if at['times'] < total]
                         case 2:
-                            check_complete = actual_times[k]['times'] if actual_times[k]['times'] < total else None
+                            check_complete = True if actual_times[k]['times'] < total else None
                     if check_complete:
                         user_todo.complete = False
                         break

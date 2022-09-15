@@ -46,6 +46,10 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
 
                     g.token = new_token
                     return function(*args, **kwargs)
+                else:
+                    e = InvalidTokenProvidedException()
+                    (body, status) = e.get_response_body()
+                    return make_response(body, status)
             except Exception as e:
                 match (e.__class__.__name__):
                     case AuthNotEnoughException.__name__ | TokenNotProvidedException.__name__:

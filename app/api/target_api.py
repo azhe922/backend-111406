@@ -53,7 +53,7 @@ def get_target(user_id):
     response = make_response({"message": message, "data": result}, status)
     return response
 
-@api.route(f"{root_path}/<user_id>/<target_date>", methods=['PATCH'])
+@api.route(f"{root_path}/<user_id>/<target_date>", methods=['POST'])
 @validate_token(check_inperson=True)
 def update_target(user_id, target_date):
     data = request.get_json()

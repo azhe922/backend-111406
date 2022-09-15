@@ -127,5 +127,5 @@ def __get_token(user_id):
     user = User.objects.get(user_id=user_id)
     payload = {"user_id": user.user_id, "_id": str(user.id),
                "email": user.email, "role": user.role.value,
-               'exp': datetime_delta(datetime.datetime.utcnow(), key='minutes', value=60)}
+               'exp': datetime_delta(datetime.datetime.utcnow(), key='days', value=1)}
     return generate_token(payload)
