@@ -12,7 +12,7 @@ class User(Document):
     |:------------:|:----------------:|:--------:|
     |      id      |     流水編號     |  string  |
     |   user_id    |    使用者帳號    |  string  |
-    |  birthyear   | 出生年月日(西元) |  string  |
+    |  birthday    | 出生年月日(西元) |  string  |
     |    email     |       信箱       |  string  |
     |    gender    |       性別       |   int    |
     |    height    |       身高       |  float   |

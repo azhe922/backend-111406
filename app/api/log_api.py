@@ -8,7 +8,7 @@ root_path = "/log"
 logger = logging.getLogger(__name__)
 
 @api.route(root_path, methods=['POST'])
-@validate_token
+@validate_token()
 def add_log():
     data = request.get_json()
     logger.info(f"log data: {data}")
@@ -28,7 +28,7 @@ def add_log():
     return response
 
 @api.route(f'{root_path}/<start>/<end>', methods=['GET'])
-@validate_token
+@validate_token()
 def search_log(start, end):
     result = []
     message = ""

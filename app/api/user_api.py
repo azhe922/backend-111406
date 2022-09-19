@@ -1,8 +1,9 @@
 from flask import request, make_response
-from app.service.user_service import user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service
+from app.service.user_service import user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service
 import logging
 from . import api
-from app.utils.jwt_token import validate_token
+from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
+from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -21,10 +22,13 @@ def signup():
         message = "註冊成功"
         logger.info(f"{data['user_id']} {message}")
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "註冊失敗，請稍後再試"
+        match e.__class__.__name__:
+            case UserIdOrEmailAlreadyExistedException.__name__:
+                pass
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     return response
 
@@ -40,12 +44,15 @@ def login():
     logger.info(f"{data['user_id']} 使用者登入")
     try:
         token = user_login_service(data)
-        message = "登入成功" if token else "登入失敗，帳號或密碼錯誤"
+        message = "登入成功"
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = errMessage
+        match e.__class__.__name__:
+            case LoginFailedException.__name__ | NotFoundUseridException.__name__:
+                pass
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     response.headers['token'] = token
     return response
@@ -54,7 +61,7 @@ def login():
 
 
 @api.route(root_path, methods=['GET'])
-@validate_token
+@validate_token(has_role=200)
 def search_user():
     result = []
     message = ""
@@ -63,10 +70,11 @@ def search_user():
         result = search_user_service()
         message = "查詢成功"
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "查詢失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message, "data": result}, status)
     return response
 
@@ -74,7 +82,7 @@ def search_user():
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
-@validate_token
+@validate_token(check_inperson=True)
 def getuser_by_id(user_id):
     result = []
     message = ""
@@ -83,31 +91,81 @@ def getuser_by_id(user_id):
         result = getuser_by_id_service(user_id)
         message = "查詢成功"
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "查詢失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message, "data": result}, status)
     return response
 
 # 使用者資料更新
 
 
-@api.route(f"{root_path}/update", methods=['POST'])
-@validate_token
-def update_user():
+@api.route(f"{root_path}/update/<user_id>", methods=['POST'])
+@validate_token(check_inperson=True)
+def update_user(user_id):
     data = request.get_json()
     message = ""
     status = 200
-    logger.info(f"{data['user_id']} 使用者資料更新: {data}")
+    logger.info(f"{user_id} 使用者資料更新: {data}")
     try:
-        update_user_service(data)
+        update_user_service(data, user_id)
         message = "更新成功"
-        logger.info(f"{data['user_id']} {message}")
+        logger.info(f"{user_id} {message}")
     except Exception as e:
-        errMessage = str(e)
-        status = 500
-        logger.error(errMessage)
-        message = "更新失敗，請稍後再試"
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
+    response = make_response({"message": message}, status)
+    return response
+
+# 修改密碼
+
+
+@api.route(f"{root_path}/update/password/<user_id>", methods=['POST'])
+@validate_token(check_inperson=True)
+def update_pwd(user_id):
+    data = request.get_json()
+    message = ""
+    status = 200
+    logger.info(f"{user_id} 修改密碼")
+    try:
+        update_pwd_service(data, user_id)
+        message = "更新成功"
+        logger.info(message)
+    except Exception as e:
+        match e.__class__.__name__:
+            case PasswordIncorrectException.__name__:
+                pass
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
+    response = make_response({"message": message}, status)
+    return response
+
+# 忘記密碼修改
+
+
+@api.route(f"{root_path}/update/forget/password/<email>", methods=['POST'])
+@validate_change_forget_pwd_token
+def update_forget_pwd(email):
+    data = request.get_json()
+    message = ""
+    status = 200
+    logger.info(f"{email} 修改密碼")
+    try:
+        update_pwd_service(data, email)
+        message = "更新成功"
+        logger.info(message)
+    except Exception as e:
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
     response = make_response({"message": message}, status)
     return response

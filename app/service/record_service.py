@@ -14,9 +14,9 @@ def add_record_service(record_data):
     record.save()
 
 
-def search_record_service(user_id, isfirst=False):
+def search_record_service(user_id, part, isfirst=False):
     records = []
-    results = Record.objects[:1](user_id=user_id).order_by(
+    results = Record.objects[:1](user_id=user_id, part=part).order_by(
         '-create_time') if isfirst else Record.objects(user_id=user_id).order_by('-create_time')
     for record in results:
         record_data = record.to_json()

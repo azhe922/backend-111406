@@ -1,5 +1,10 @@
 from app.model.validcode import ValidCode
+from app.utils.backend_error import ExpiredOtpException, OtherOtpException
+from app.utils.jwt_token import generate_token
+from app.utils.backend_util import datetime_delta
+import datetime
 import time
+
 
 def add_valid_code(data):
     email = data['email']
@@ -16,6 +21,7 @@ def add_valid_code(data):
         validcode = ValidCode(email=email, otp=otp, create_time=create_time)
         validcode.save()
 
+
 def get_code(email):
     otp = ""
     valid_time = int(time.time())
@@ -24,7 +30,11 @@ def get_code(email):
         valid_code = valid_code.get(email=email)
         otp = valid_code.otp
         if valid_time - valid_code.create_time > 300:
-            raise Exception("the otp code is expired")
+            raise ExpiredOtpException()
     else:
-        raise Exception("no data")
-    return otp
+        raise OtherOtpException()
+
+    payload = {"email": email, 'exp': datetime_delta(
+        datetime.datetime.utcnow(), key='minutes', value=10)}
+    token = generate_token(payload)
+    return (otp, token)

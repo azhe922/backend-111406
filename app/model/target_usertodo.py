@@ -18,10 +18,10 @@ class UserTodo(EmbeddedDocument):
     target_date = StringField(required=True)
     complete = BooleanField(default=False)
     actual_times = ListField(default=[{
-        'times': 0
-    },{
-        'times': 0
-    },{
+        'left': {'times': 0}, 'right': {'times': 0}
+    }, {
+        'left': {'times': 0}, 'right': {'times': 0}
+    }, {
         'times': 0
     }], max_length=3)
 
