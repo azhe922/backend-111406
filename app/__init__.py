@@ -3,13 +3,11 @@ from flask_cors import CORS
 from flask_mail import Mail
 from mongoengine import connect
 from app_config import config
-from dotenv import load_dotenv
 
 mail = Mail()
 
 def create_app(config_name):
     app = Flask(__name__)
-    load_dotenv()
     app.config.from_object(config[config_name])
     config[config_name].init_app(app)
 

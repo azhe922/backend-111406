@@ -67,3 +67,10 @@ def update_target_times_service(user_id, target_date, data):
             user_todos[i] = user_todo
             target.update(set__user_todos=user_todos)
             return
+
+
+def check_target_is_expired(user_id):
+    now = datetime.now()
+    today = now.strftime('%Y%m%d')
+    target = Target.objects(user_id=user_id, end_date__gt=today)
+    return True if target else False
