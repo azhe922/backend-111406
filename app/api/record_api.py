@@ -4,6 +4,8 @@ import logging
 from . import api
 from app.utils.jwt_token import validate_token
 from app.utils.backend_error import BackendException
+from flasgger import swag_from
+from app.api.api_doc import record_search as search_doc_record
 
 root_path = "/record"
 logger = logging.getLogger(__name__)
@@ -43,7 +45,10 @@ def add_record():
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
 @validate_token(check_inperson=True)
+@swag_from(search_doc_record)
 def search_record(user_id):
+    """查詢使用者所有測試紀錄
+    """
     result = []
     message = ""
     status = 200

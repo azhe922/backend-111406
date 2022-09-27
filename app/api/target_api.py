@@ -4,6 +4,8 @@ from . import api
 from app.utils.jwt_token import validate_token
 from app.service.target_service import add_target_service, get_target_service, update_target_times_service,check_target_is_expired
 from app.utils.backend_error import BackendException
+from flasgger import swag_from
+from app.api.api_doc import target_get as get_doc
 
 root_path = "/target"
 logger = logging.getLogger(__name__)
@@ -36,7 +38,10 @@ def add_target():
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
 @validate_token()
+@swag_from(get_doc)
 def get_target(user_id):
+    """查詢個人計劃表
+    """
     result = []
     message = ""
     status = 200

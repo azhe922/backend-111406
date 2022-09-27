@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_mail import Mail
 from mongoengine import connect
 from app_config import config
+from flasgger import Swagger
 
 mail = Mail()
 
@@ -20,5 +21,7 @@ def create_app(config_name):
 
     with app.app_context():
         g.setdefault("token", None)
+
+    Swagger(app)
 
     return app
