@@ -14,16 +14,18 @@ def get_target_service(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
     this_week_days = [d.strftime('%Y%m%d') for d in get_week(now)]
-    target = Target.objects.get(user_id=user_id, end_date__gt=today)
+    target = Target.objects(user_id=user_id)
     result = []
-    user_todos = target.user_todos
-    for i in range(len(user_todos)):
-        user_todo = user_todos[i]
-        target_date = user_todo.target_date
-        # 查詢本周所有任務
-        if (target_date in this_week_days) and (today >= target_date):
-            result.append(user_todo.to_json())
-    return result
+    if target:     
+        target = target.get(end_date__gt=today)
+        user_todos = target.user_todos
+        for i in range(len(user_todos)):
+            user_todo = user_todos[i]
+            target_date = user_todo.target_date
+            # 查詢本周所有任務
+            if (target_date in this_week_days) and (today >= target_date):
+                result.append(user_todo.to_json())
+        return result
 
 
 
@@ -65,3 +67,10 @@ def update_target_times_service(user_id, target_date, data):
             user_todos[i] = user_todo
             target.update(set__user_todos=user_todos)
             return
+
+
+def check_target_is_expired(user_id):
+    now = datetime.now()
+    today = now.strftime('%Y%m%d')
+    target = Target.objects(user_id=user_id, end_date__gt=today)
+    return True if target else False
