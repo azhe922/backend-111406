@@ -2,7 +2,7 @@ from flask import request, make_response
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
-from app.service.target_service import add_target_service, get_target_service, update_target_times_service,check_target_is_expired
+from app.service.target_service import add_target_service, get_target_service, update_target_times_service,check_target_is_expired, get_target_by_started
 from app.utils.backend_error import BackendException
 from flasgger import swag_from
 from app.api.api_doc import target_get as get_doc
@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 @validate_token()
 def add_target():
     data = request.get_json()
-    logger.info(f"target data: {data}")
     message = ""
     status = 200
     try:
@@ -85,6 +84,27 @@ def target_check_existed(user_id):
     status = 200
     try:
         result = check_target_is_expired(user_id)
+        message = "確認訓練表成功"
+        logger.info(message)
+    except Exception as e:
+        match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
+    response = make_response({"message": message, "data": result}, status)
+    return response
+
+
+# 檢查是否為剛建立的訓練表
+@api.route(f"{root_path}/started/<user_id>", methods=['GET'])
+@validate_token()
+def target_getby_started(user_id):
+    result = False
+    message = ""
+    status = 200
+    try:
+        result = get_target_by_started(user_id)
         message = "確認訓練表成功"
         logger.info(message)
     except Exception as e:

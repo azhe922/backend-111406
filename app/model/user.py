@@ -34,6 +34,7 @@ class User(Document):
     gender = EnumField(Gender, required=True, max_length=1)
     birthday = StringField(required=True, max_length=10)
     role = EnumField(UserRole, required=True, max_length=1)
+    reference = StringField(max_length=20)
     create_time = IntField()
     update_time = IntField()
 

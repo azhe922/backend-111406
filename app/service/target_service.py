@@ -74,3 +74,11 @@ def check_target_is_expired(user_id):
     today = now.strftime('%Y%m%d')
     target = Target.objects(user_id=user_id, end_date__gt=today)
     return True if target else False
+
+
+def get_target_by_started(user_id):
+    now = datetime.now()
+    today = now.strftime('%Y%m%d')
+    target = Target.objects(user_id=user_id, start_date__gt=today)
+    if target:
+        return target.get().to_json()
