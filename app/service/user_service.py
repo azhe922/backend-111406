@@ -106,9 +106,6 @@ def update_pwd_service(userdata, query_index):
             user.save()
         else:
             raise PasswordIncorrectException()
-        
-
-
 
 
 def check_user_token(token):

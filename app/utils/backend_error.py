@@ -78,12 +78,12 @@ class NotFoundUseridException(BackendException):
     status = 500
 
 
-class UserIdOrEmailAlreadyExistedException(BaseException):
+class UserIdOrEmailAlreadyExistedException(BackendException):
     message = "此帳號或email已被註冊"
     body = {"message": message}
     status = 500
 
-class PasswordIncorrectException(BaseException):
+class PasswordIncorrectException(BackendException):
     message = "輸入密碼與舊密碼不相符"
     body = {"message": message}
     status = 500
