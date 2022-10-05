@@ -24,7 +24,6 @@ class User(Document):
     | update_time  |     更新時間     |   int    |
     | eth_account  |    乙太坊帳號    |  string  |
     | eth_password |    乙太坊密碼    |  string  |
-    | eth_sum      |    乙太坊金額    |   int    |
     """
     user_id = StringField(required=True, max_length=20)
     name = StringField(max_length=10)
@@ -35,12 +34,8 @@ class User(Document):
     gender = EnumField(Gender, required=True, max_length=1)
     birthday = StringField(required=True, max_length=10)
     role = EnumField(UserRole, required=True, max_length=1)
-    reference = StringField(max_length=20)
     create_time = IntField()
     update_time = IntField()
-    eth_account = StringField(max_length=100)
-    eth_password = StringField(max_length=100)
-    eth_sum = IntField()
 
     def to_json(self, *args, **kwargs):
         result = json.loads(super().to_json(*args, **kwargs))
