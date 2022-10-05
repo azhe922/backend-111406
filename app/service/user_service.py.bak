@@ -82,17 +82,6 @@ def update_user_service(user, user_id):
         old_user.update_time = update_time
         old_user.save()
 
-def update_user_service_ethsum(user, user_id):
-    old_user = User.objects(user_id=user_id)
-    update_time = int(time.time())
-    if old_user:
-        old_user = old_user.get(user_id=user_id)
-        userdata_json = dict_to_json(user)
-        new_user = User().from_json(userdata_json)
-        old_user.eth_sum = new_user.eth_sum
-        old_user.update_time = update_time
-        old_user.save()
-
 
 def check_email_existed(email):
     email_check = User.objects[:1](email=email)
