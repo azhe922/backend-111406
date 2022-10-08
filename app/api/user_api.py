@@ -4,6 +4,8 @@ import logging
 from . import api
 from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
 from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException
+from flasgger import swag_from
+from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_search as search_doc, user_get as get_doc
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -12,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 @api.route(f"{root_path}/signup", methods=['POST'])
+@swag_from(signup_doc)
 def signup():
+    """使用者註冊
+    """
     data = request.get_json()
     message = ""
     status = 200
@@ -36,7 +41,10 @@ def signup():
 
 
 @api.route(f"{root_path}/login", methods=['POST'])
+@swag_from(login_doc)
 def login():
+    """使用者登入    
+    """
     data = request.get_json()
     message = ""
     status = 200
@@ -62,7 +70,11 @@ def login():
 
 @api.route(root_path, methods=['GET'])
 @validate_token(has_role=200)
+@swag_from(search_doc)
 def search_user():
+    """查詢所有使用者
+    需要管理者帳號才能使用
+    """
     result = []
     message = ""
     status = 200
@@ -83,7 +95,10 @@ def search_user():
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
 @validate_token(check_inperson=True)
+@swag_from(get_doc)
 def getuser_by_id(user_id):
+    """依使用者ID查詢用戶資料
+    """
     result = []
     message = ""
     status = 200

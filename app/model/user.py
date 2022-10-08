@@ -40,11 +40,14 @@ class User(Document):
     update_time = IntField()
     eth_account = StringField(max_length=100)
     eth_password = StringField(max_length=100)
-    eth_sum = IntField()
+    eth_sum = IntField(min_value=0)
+    # TODO 推薦人、個人身體狀況調查(高血壓、三酸肝等等)
 
     def to_json(self, *args, **kwargs):
         result = json.loads(super().to_json(*args, **kwargs))
         result.pop('password', None)
         result['gender'] = self.gender.description
         result['role'] = self.role.description
+        # TODO 資料庫更新後即可刪除
+        result['eth_sum'] = self.eth_sum or 0
         return result
