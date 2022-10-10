@@ -29,7 +29,7 @@ def search_record_service(user_id, part, isfirst=False):
 
 def get_standard_times_service(data):
     times = []
-    age = data['age']
+    age = max(data['age'], 65)
     gender = Gender(data['gender'])
     part = TrainingPart(data['part'])
     for standard in Standard.objects(age__lte__0=age, age__gte__1=age, gender=gender, part=part):
