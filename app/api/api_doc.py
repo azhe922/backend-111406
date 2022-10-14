@@ -42,6 +42,12 @@ user_model = \
                 "eth_password": {
                     "type": "string"
                 },
+                "eth_sum": {
+                    "type": "int"
+                },
+                "other_detail": {
+                    "type": "string"
+                },
             }
         }
     }
@@ -195,6 +201,8 @@ user_signup = {
         {"name": "height", "in": "Body", "type": "number"},
         {"name": "weight", "in": "Body", "type": "number"},
         {"name": "birthday", "in": "Body", "type": "string", "required": "true"},
+        {"name": "institution", "in": "Body", "type": "string"},
+        {"name": "other_detail", "in": "Body", "type": "string"},
     ], "responses": {
         "200": {
             "description": "使用者註冊成功",

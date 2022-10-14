@@ -25,6 +25,8 @@ class User(Document):
     | eth_account  |    乙太坊帳號    |  string  |
     | eth_password |    乙太坊密碼    |  string  |
     | eth_sum      |    乙太坊金額    |   int    |
+    | institution  |    單位/機構     |  string  |
+    | other_detail |     其他事項     |  string  |
     """
     user_id = StringField(required=True, max_length=20)
     name = StringField(max_length=10)
@@ -41,7 +43,14 @@ class User(Document):
     eth_account = StringField(max_length=100)
     eth_password = StringField(max_length=100)
     eth_sum = IntField(min_value=0)
-    # TODO 推薦人、個人身體狀況調查(高血壓、三酸肝等等)
+    institution = StringField()
+    other_detail = StringField()
+    """ {
+        "isHadHypertension": boolean,
+        "isHadHyperglycemia": boolean,
+        "isHadHyperlipidemia": boolean,
+        "isHadExerciseHabits": boolean
+        }"""
 
     def to_json(self, *args, **kwargs):
         result = json.loads(super().to_json(*args, **kwargs))

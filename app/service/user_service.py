@@ -6,6 +6,7 @@ from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
 from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, LoginFailedException, PasswordIncorrectException
 from app.model.user_loginrecord import UserLoginRecord
+from app.enums.user_role import UserRole
 
 
 def user_signup_service(userdata):
@@ -19,7 +20,8 @@ def user_signup_service(userdata):
         userdata['create_time'] = int(time.time())
 
         userdata_json = dict_to_json(userdata)
-        user = User().from_json(userdata_json)
+        user = User.from_json(userdata_json)
+        user.role = UserRole.normal
         user.save()
 
 
