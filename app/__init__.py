@@ -1,7 +1,6 @@
 from flask import Flask, g
 from flask_cors import CORS
 from flask_mail import Mail
-from mongoengine import connect
 from app_config import config
 from flasgger import Swagger
 
@@ -13,7 +12,6 @@ def create_app(config_name):
     config[config_name].init_app(app)
 
     mail.init_app(app)
-    connect(host=app.config['DB_HOST'])
     CORS(app, expose_headers="token")
 
     from app.api import api as api_blueprint

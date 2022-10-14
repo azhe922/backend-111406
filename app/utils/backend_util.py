@@ -1,6 +1,9 @@
 from datetime import datetime as dt
 import json
 import datetime
+from mongoengine import connect
+from mongoengine.connection import disconnect
+from flask import current_app as app
 
 
 def dict_to_json(data):
@@ -32,3 +35,9 @@ def get_week(date):
 
 def datetime_strf(time):
     return dt.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
+
+def init_db():    
+    return connect(host=app.config["DB_HOST"])
+
+def close_db():
+    return disconnect()
