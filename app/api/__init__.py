@@ -1,6 +1,5 @@
 from flask import Blueprint, g
 from app.utils.backend_util import init_db, close_db
-from mongoengine import get_db
 
 api = Blueprint('api', __name__)
 
@@ -15,7 +14,7 @@ def teardown_request(exception):
     close_db()
 
 @api.after_request
-def add_header(response):
+def after_request(response):
     token = g.get("token")
     if token:
         response.headers['token'] = token

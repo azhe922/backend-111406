@@ -2,6 +2,7 @@ from app.model.validcode import ValidCode
 from app.utils.backend_error import ExpiredOtpException, OtherOtpException
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import datetime_delta
+from app.enums.deltatime_type import DeltaTimeType
 import datetime
 import time
 
@@ -35,6 +36,6 @@ def get_code(email):
         raise OtherOtpException()
 
     payload = {"email": email, 'exp': datetime_delta(
-        datetime.datetime.utcnow(), key='minutes', value=10)}
+        datetime.datetime.utcnow(), key=DeltaTimeType.minutes, value=10)}
     token = generate_token(payload)
     return (otp, token)

@@ -7,6 +7,7 @@ from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf
 from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, LoginFailedException, PasswordIncorrectException
 from app.model.user_loginrecord import UserLoginRecord
 from app.enums.user_role import UserRole
+from app.enums.deltatime_type import DeltaTimeType
 
 
 def user_signup_service(userdata):
@@ -137,5 +138,5 @@ def __get_token(user_id):
     user = User.objects.get(user_id=user_id)
     payload = {"user_id": user.user_id, "_id": str(user.id),
                "email": user.email, "role": user.role.value,
-               'exp': datetime_delta(datetime.datetime.utcnow(), key='days', value=1)}
+               'exp': datetime_delta(datetime.datetime.utcnow(), key=DeltaTimeType.hours, value=1)}
     return generate_token(payload)
