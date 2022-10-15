@@ -34,8 +34,8 @@ def update_target_times_service(user_id, target_date, data):
     today = now.strftime('%Y%m%d')
     target = Target.objects.get(user_id=user_id, end_date__gt=today)
     user_todos = target.user_todos
-    for i in range(len(user_todos)):
-        user_todo = user_todos[i]
+    for todo_index in range(len(user_todos)):
+        user_todo = user_todos[todo_index]
         if user_todo.target_date == target_date:
             actual_times = user_todo.actual_times
             training_part = TrainingPart(data.pop('part')) 
@@ -64,7 +64,7 @@ def update_target_times_service(user_id, target_date, data):
                 if k == 2:
                     user_todo.complete = True
             
-            user_todos[i] = user_todo
+            user_todos[todo_index] = user_todo
             target.update(set__user_todos=user_todos)
             return
 

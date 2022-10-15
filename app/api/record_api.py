@@ -37,8 +37,7 @@ def add_record():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": data}, status)
-    return response
+    return make_response({"message": message, "data": data}, status)
 
 # 查詢使用者所有測試紀錄
 
@@ -62,8 +61,7 @@ def search_record(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 # 測試結果數據分析
 

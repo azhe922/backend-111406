@@ -29,8 +29,7 @@ def add_target():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 查詢個人計劃表
 
@@ -54,8 +53,8 @@ def get_target(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
+
 
 @api.route(f"{root_path}/<user_id>/<target_date>", methods=['POST'])
 @validate_token(check_inperson=True)
@@ -73,8 +72,8 @@ def update_target(user_id, target_date):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
+
 
 @api.route(f"{root_path}/existed/<user_id>", methods=['GET'])
 @validate_token()
@@ -92,8 +91,7 @@ def target_check_existed(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 
 # 檢查是否為剛建立的訓練表
@@ -113,5 +111,4 @@ def target_getby_started(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)

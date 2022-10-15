@@ -12,7 +12,7 @@ class User(Document):
     |:------------:|:----------------:|:--------:|
     |      id      |     流水編號     |  string  |
     |   user_id    |    使用者帳號    |  string  |
-    |  birthday    | 出生年月日(西元) |  string  |
+    |   birthday   | 出生年月日(西元) |  string  |
     |    email     |       信箱       |  string  |
     |    gender    |       性別       |   int    |
     |    height    |       身高       |  float   |
@@ -24,7 +24,7 @@ class User(Document):
     | update_time  |     更新時間     |   int    |
     | eth_account  |    乙太坊帳號    |  string  |
     | eth_password |    乙太坊密碼    |  string  |
-    | eth_sum      |    乙太坊金額    |   int    |
+    |   eth_sum    |    乙太坊金額    |   int    |
     | institution  |    單位/機構     |  string  |
     | other_detail |     其他事項     |  string  |
     """

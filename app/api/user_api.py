@@ -34,8 +34,7 @@ def signup():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 使用者登入
 
@@ -87,8 +86,7 @@ def search_user():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 # 依ID查詢使用者
 
@@ -111,8 +109,7 @@ def getuser_by_id(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 # 使用者資料更新
 
@@ -134,8 +131,7 @@ def update_user(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 使用者代幣更新
 
@@ -156,8 +152,7 @@ def update_user_eth(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response    
+    return make_response({"message": message}, status)
 
 # 修改密碼
 
@@ -181,8 +176,7 @@ def update_pwd(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 忘記密碼修改
 
@@ -204,5 +198,4 @@ def update_forget_pwd(email):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
