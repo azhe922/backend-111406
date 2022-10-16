@@ -115,7 +115,7 @@ def target_getby_started(user_id):
 
 
 @api.route(f"{root_path}/add/todo/<user_id>", methods=['POST'])
-@validate_token()
+@validate_token(check_inperson=True)
 def add_todo(user_id):
     data = request.get_json()
     message = ""

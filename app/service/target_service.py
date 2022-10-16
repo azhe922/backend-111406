@@ -32,7 +32,7 @@ def get_target_service(user_id):
 
 
 def update_target_times_service(user_id, target_date, data):
-    target = __get_target_by_today(user_id)
+    target = __get_target_by_today(user_id).get()
     user_todos = target.user_todos
     for todo_index in range(len(user_todos)):
         user_todo = user_todos[todo_index]
@@ -75,15 +75,16 @@ def check_target_is_expired(user_id):
 
 
 def get_target_by_started(user_id):
-    target = __get_target_by_today(user_id)
-    if target:
-        return target.get().to_json()
+    now = datetime.now()
+    today = now.strftime('%Y%m%d')
+    target = Target.objects(user_id=user_id, start_date__gt=today)
+    return True if target else False
 
 def add_todo_service(user_id, todo_data):
     usertodo_json = dict_to_json(todo_data)
     to_add_usertodo = UserTodo.from_json(usertodo_json)
 
-    target = __get_target_by_today(user_id)
+    target = __get_target_by_today(user_id).get()
     user_todos = target.user_todos
     check_istarget_existed = [user_todo for user_todo in user_todos if user_todo.target_date == to_add_usertodo.target_date]
     if check_istarget_existed:
@@ -95,4 +96,4 @@ def add_todo_service(user_id, todo_data):
 def __get_target_by_today(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
-    return Target.objects.get(user_id=user_id, end_date__gt=today)
+    return Target.objects(user_id=user_id, end_date__gt=today)
