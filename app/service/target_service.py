@@ -94,6 +94,12 @@ def add_todo_service(user_id, todo_data):
         target.user_todos.append(to_add_usertodo)
         target.save()
 
+def get_last_and_iscompleted_target(user_id):
+    now = get_now_timestamp()
+    target = Target.objects(user_id=user_id, create_time__lt=now).order_by('-create_time').first()
+    return target.create_time if target else 0
+
+
 def __get_target_by_today(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
