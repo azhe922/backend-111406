@@ -4,11 +4,13 @@ from app.utils.backend_util import dict_to_json, get_week
 from datetime import datetime
 from app.enums.training_part import TrainingPart
 from app.utils.backend_error import UserTodoHasAlreadyCreateException
+import time
 
 
 def add_target_service(target_data):
     target_json = dict_to_json(target_data)
     target = Target().from_json(target_json)
+    target.create_time = int(time.time())
     target.save()
 
 
