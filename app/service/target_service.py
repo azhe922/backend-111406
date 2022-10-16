@@ -1,16 +1,15 @@
 from app.model.target import Target
 from app.model.target_usertodo import UserTodo
-from app.utils.backend_util import dict_to_json, get_week
+from app.utils.backend_util import dict_to_json, get_week, get_now_timestamp
 from datetime import datetime
 from app.enums.training_part import TrainingPart
 from app.utils.backend_error import UserTodoHasAlreadyCreateException
-import time
 
 
 def add_target_service(target_data):
     target_json = dict_to_json(target_data)
     target = Target().from_json(target_json)
-    target.create_time = int(time.time())
+    target.create_time = get_now_timestamp()
     target.save()
 
 
@@ -71,12 +70,12 @@ def update_target_times_service(user_id, target_date, data):
             return
 
 
-def check_target_is_expired(user_id):
+def check_target_existed_service(user_id):
     target = __get_target_by_today(user_id)
     return True if target else False
 
 
-def get_target_by_started(user_id):
+def check_target_isjuststarted_service(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
     target = Target.objects(user_id=user_id, start_date__gt=today)

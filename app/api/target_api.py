@@ -2,7 +2,7 @@ from flask import request, make_response
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
-from app.service.target_service import add_target_service, get_target_service, update_target_times_service, check_target_is_expired, get_target_by_started, add_todo_service
+from app.service.target_service import add_target_service, get_target_service, update_target_times_service, check_target_existed_service, check_target_isjuststarted_service, add_todo_service
 from app.utils.backend_error import BackendException, UserTodoHasAlreadyCreateException
 from flasgger import swag_from
 from app.api.api_doc import target_get as get_doc
@@ -82,7 +82,7 @@ def target_check_existed(user_id):
     message = ""
     status = 200
     try:
-        result = check_target_is_expired(user_id)
+        result = check_target_existed_service(user_id)
         message = "確認訓練表成功"
         logger.info(message)
     except Exception as e:
@@ -97,12 +97,12 @@ def target_check_existed(user_id):
 # 檢查是否為剛建立的訓練表
 @api.route(f"{root_path}/started/<user_id>", methods=['GET'])
 @validate_token()
-def target_getby_started(user_id):
+def check_target_is_juststarted(user_id):
     result = False
     message = ""
     status = 200
     try:
-        result = get_target_by_started(user_id)
+        result = check_target_isjuststarted_service(user_id)
         message = "確認訓練表成功"
         logger.info(message)
     except Exception as e:

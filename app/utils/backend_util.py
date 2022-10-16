@@ -1,6 +1,7 @@
 from datetime import datetime as dt
 import json
 import datetime
+import time
 from mongoengine import connect
 from mongoengine.connection import disconnect
 from flask import current_app as app
@@ -44,3 +45,6 @@ def init_db():
 
 def close_db():
     return disconnect()
+
+def get_now_timestamp():
+    return int(time.time())
