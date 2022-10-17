@@ -24,8 +24,7 @@ def add_log():
         status = 500
         logger.error(errMessage)
         message = errMessage
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 @api.route(f'{root_path}/<start>/<end>', methods=['GET'])
 @validate_token()
@@ -41,5 +40,4 @@ def search_log(start, end):
         status = 500
         logger.error(errMessage)
         message = "查詢Log失敗，請稍後再試"
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)

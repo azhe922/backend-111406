@@ -43,7 +43,7 @@ class ProductionConfig(Config):
         # mail_handler.setLevel(logging.ERROR)
         # app.logger.addHandler(mail_handler)
 
-class HerokuConfig(ProductionConfig):
+class CloudServiceConfig(ProductionConfig):
 
     @classmethod
     def init_app(cls, app):
@@ -59,7 +59,7 @@ class HerokuConfig(ProductionConfig):
 config = {
     'development': Config,
     'production': ProductionConfig,
-    'heroku': HerokuConfig,
+    'cloud': CloudServiceConfig,
 
     'default': Config
 }

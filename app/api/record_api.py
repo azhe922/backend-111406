@@ -1,5 +1,6 @@
 from flask import request, make_response
-from app.service.record_service import add_record_service, search_record_service, get_standard_times_service
+from app.service.record_service import add_record_service, get_record_before_last_target, get_standard_times_service, search_records_by_userid
+from app.service.target_service import get_last_and_iscompleted_target, check_target_existed_service, check_target_isjuststarted_service
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
@@ -37,8 +38,7 @@ def add_record():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": data}, status)
-    return response
+    return make_response({"message": message, "data": data}, status)
 
 # 查詢使用者所有測試紀錄
 
@@ -53,7 +53,7 @@ def search_record(user_id):
     message = ""
     status = 200
     try:
-        result = search_record_service(user_id)
+        result = search_records_by_userid(user_id)
         message = "查詢成功"
         logger.info(message)
     except Exception as e:
@@ -62,8 +62,7 @@ def search_record(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 # 測試結果數據分析
 
@@ -71,13 +70,24 @@ def search_record(user_id):
 def __analyze_record(data):
     # the parameters like (user_id, age, part, gender, times)
     data = request.get_json()
+    user_id = data['user_id']
+    times = data['times']
     result = {}
     has_record = False
+    difference = None
+    # 取得常模分配表
     standard = get_standard_times_service(data)
-    record = search_record_service(data['user_id'], data['part'], True)
-    times = data['times']
+    # 確認使用者的訓練計劃表是否正在執行
+    check_ishad_existed_target = check_target_existed_service(user_id)
+    # 確認使用者的訓練計劃表是不是剛開始
+    check_isjuststarted_target = check_target_isjuststarted_service(user_id)
+    # 取得使用者已做完的訓練中最近一筆的建立時間
+    target_create_time = get_last_and_iscompleted_target(user_id)
+    if target_create_time > 0 and not check_ishad_existed_target and not check_isjuststarted_target:
+        # 取得前側紀錄
+        record = get_record_before_last_target(data['user_id'], target_create_time, data['part'])
+        difference = times - record['times']
     compare = [s for s in standard if times >= s]
-    difference = times - record[0]['times'] if len(record) > 0 else -999
     pr = len(compare) * 5
     test_result = ""
     if pr > 75:
@@ -91,7 +101,7 @@ def __analyze_record(data):
         "pr": pr,
         "test_result": test_result
     }
-    if difference > -100:
+    if difference:
         has_record = True
         result["difference"] = difference
     logger.info("分析成功")

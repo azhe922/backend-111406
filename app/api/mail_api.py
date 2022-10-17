@@ -44,8 +44,7 @@ def send_validcode_mail():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 
 @api.route(f'{root_path}/validate', methods=["POST"])

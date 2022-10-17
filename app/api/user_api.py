@@ -4,6 +4,8 @@ import logging
 from . import api
 from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
 from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException
+from flasgger import swag_from
+from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_search as search_doc, user_get as get_doc
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -12,7 +14,10 @@ logger = logging.getLogger(__name__)
 
 
 @api.route(f"{root_path}/signup", methods=['POST'])
+@swag_from(signup_doc)
 def signup():
+    """使用者註冊
+    """
     data = request.get_json()
     message = ""
     status = 200
@@ -29,14 +34,16 @@ def signup():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 使用者登入
 
 
 @api.route(f"{root_path}/login", methods=['POST'])
+@swag_from(login_doc)
 def login():
+    """使用者登入    
+    """
     data = request.get_json()
     message = ""
     status = 200
@@ -62,7 +69,11 @@ def login():
 
 @api.route(root_path, methods=['GET'])
 @validate_token(has_role=200)
+@swag_from(search_doc)
 def search_user():
+    """查詢所有使用者
+    需要管理者帳號才能使用
+    """
     result = []
     message = ""
     status = 200
@@ -75,15 +86,17 @@ def search_user():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 # 依ID查詢使用者
 
 
 @api.route(f"{root_path}/<user_id>", methods=['GET'])
 @validate_token(check_inperson=True)
+@swag_from(get_doc)
 def getuser_by_id(user_id):
+    """依使用者ID查詢用戶資料
+    """
     result = []
     message = ""
     status = 200
@@ -96,8 +109,7 @@ def getuser_by_id(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message, "data": result}, status)
-    return response
+    return make_response({"message": message, "data": result}, status)
 
 # 使用者資料更新
 
@@ -119,8 +131,7 @@ def update_user(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 使用者代幣更新
 
@@ -141,8 +152,7 @@ def update_user_eth(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response    
+    return make_response({"message": message}, status)
 
 # 修改密碼
 
@@ -166,8 +176,7 @@ def update_pwd(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)
 
 # 忘記密碼修改
 
@@ -189,5 +198,4 @@ def update_forget_pwd(email):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    return response
+    return make_response({"message": message}, status)

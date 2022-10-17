@@ -78,12 +78,19 @@ class NotFoundUseridException(BackendException):
     status = 500
 
 
-class UserIdOrEmailAlreadyExistedException(BaseException):
+class UserIdOrEmailAlreadyExistedException(BackendException):
     message = "此帳號或email已被註冊"
     body = {"message": message}
     status = 500
 
-class PasswordIncorrectException(BaseException):
+
+class PasswordIncorrectException(BackendException):
     message = "輸入密碼與舊密碼不相符"
+    body = {"message": message}
+    status = 500
+
+
+class UserTodoHasAlreadyCreateException(BackendException):
+    message = "今天已經做過訓練任務囉！如果需要多做訓練請等待至隔日再新增任務！"
     body = {"message": message}
     status = 500
