@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, ListField, EmbeddedDocumentField, IntField
+from mongoengine import Document, StringField, EmbeddedDocumentListField, IntField
 import json
 
 from app.model.target_usertodo import UserTodo
@@ -19,7 +19,7 @@ class Target(Document):
     user_id = StringField(required=True, max_length=20)
     start_date = StringField(required=True)
     end_date = StringField(required=True)
-    user_todos = ListField(EmbeddedDocumentField(UserTodo))
+    user_todos = EmbeddedDocumentListField(UserTodo)
     create_time = IntField()
 
     def to_json(self, *args, **kwargs):

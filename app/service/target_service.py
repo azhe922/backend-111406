@@ -33,45 +33,16 @@ def get_target_service(user_id):
 
 
 def update_target_times_service(user_id, target_date, data):
-    target = __get_target_by_today(user_id).get()
-    user_todos = target.user_todos
-    for todo_index in range(len(user_todos)):
-        user_todo = user_todos[todo_index]
-        if user_todo.target_date == target_date:
-            actual_times = user_todo.actual_times
-            training_part = TrainingPart(data.pop('part')) 
-
-            # 更新實作次數
-            match (training_part):
-                case TrainingPart.biceps | TrainingPart.deltoid:
-                    training_hand = data.pop('hand')
-                    actual_times[training_part.value][training_hand] = data
-                case TrainingPart.quadriceps:
-                    actual_times[training_part.value] = data
-            user_todo.actual_times = actual_times
-
-            # 檢查實作次數是否還有比目標次數還小的，沒有的話就代表已完成
-            for k in range(3):
-                total = user_todo.target_times[k]['total']
-                match (k):
-                    case 0 | 1:
-                        check_complete = [at['times'] for at in [*actual_times[k].values()] if at['times'] < total]
-                    case 2:
-                        check_complete = True if actual_times[k]['times'] < total else None
-                if check_complete:
-                    user_todo.complete = False
-                    break
-                # 這裡可以確定全部的訓練目標都檢查過
-                if k == 2:
-                    user_todo.complete = True
-            
-            user_todos[todo_index] = user_todo
-            target.update(set__user_todos=user_todos)
-            return
+    target = __get_target_from_today(user_id).get()
+    should_be_updated_todo = target.user_todos.filter(target_date=target_date).get()
+    updated_actual_times =  __judge_training_part_to_reset_actual_times_and_return(should_be_updated_todo.actual_times, data)         
+    should_be_updated_todo.actual_times = updated_actual_times
+    __check_target_is_completed(should_be_updated_todo, updated_actual_times)
+    target.save()
 
 
 def check_target_existed_service(user_id):
-    target = __get_target_by_today(user_id)
+    target = __get_target_from_today(user_id)
     return True if target else False
 
 
@@ -85,7 +56,7 @@ def add_todo_service(user_id, todo_data):
     usertodo_json = dict_to_json(todo_data)
     to_add_usertodo = UserTodo.from_json(usertodo_json)
 
-    target = __get_target_by_today(user_id).get()
+    target = __get_target_from_today(user_id).get()
     user_todos = target.user_todos
     check_istarget_existed = [user_todo for user_todo in user_todos if user_todo.target_date == to_add_usertodo.target_date]
     if check_istarget_existed:
@@ -100,7 +71,32 @@ def get_last_and_iscompleted_target(user_id):
     return target.create_time if target else 0
 
 
-def __get_target_by_today(user_id):
+def __get_target_from_today(user_id):
     now = datetime.now()
     today = now.strftime('%Y%m%d')
     return Target.objects(user_id=user_id, end_date__gt=today)
+
+def __judge_training_part_to_reset_actual_times_and_return(actual_times, data):
+    training_part = TrainingPart(data.pop('part')) 
+    match (training_part):
+        case TrainingPart.biceps | TrainingPart.deltoid:
+            training_hand = data.pop('hand')
+            actual_times[training_part.value][training_hand] = data
+        case TrainingPart.quadriceps:
+            actual_times[training_part.value] = data
+    return actual_times
+
+def __check_target_is_completed(user_todo, actual_times):
+    for k in range(3):
+        total = user_todo.target_times[k]['total']
+        match (k):
+            case 0 | 1:
+                check_complete = [at['times'] for at in [*actual_times[k].values()] if at['times'] < total]
+            case 2:
+                check_complete = True if actual_times[k]['times'] < total else None
+        if check_complete:
+            user_todo.complete = False
+            break
+        # 這裡可以確定全部的訓練目標都檢查過
+        if k == 2:
+            user_todo.complete = True
