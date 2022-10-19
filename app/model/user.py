@@ -57,6 +57,5 @@ class User(Document):
         result.pop('password', None)
         result['gender'] = self.gender.description
         result['role'] = self.role.description
-        # TODO 資料庫更新後即可刪除
         result['eth_sum'] = self.eth_sum or 0
         return result

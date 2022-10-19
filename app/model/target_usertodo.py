@@ -18,12 +18,25 @@ class UserTodo(EmbeddedDocument):
     target_date = StringField(required=True)
     complete = BooleanField(default=False)
     actual_times = ListField(default=[{
-        'left': {'times': 0}, 'right': {'times': 0}
+        'part': 0,
+        'hand': 'left',
+        'times': 0,
+    },{
+        'part': 0,
+        'hand': 'right',
+        'times': 0,
+    },{
+        'part': 1,
+        'hand': 'left',
+        'times': 0,
+    },{
+        'part': 1,
+        'hand': 'right',
+        'times': 0,
     }, {
-        'left': {'times': 0}, 'right': {'times': 0}
-    }, {
+        'part': 2,
         'times': 0
-    }], max_length=3)
+    }], max_length=5)
 
     def to_json(self, *args, **kwargs):
         return json.loads(super().to_json(*args, **kwargs))
