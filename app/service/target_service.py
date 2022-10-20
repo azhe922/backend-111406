@@ -22,8 +22,7 @@ def get_target_service(user_id):
     if target:
         target = target.get()
         user_todos = target.user_todos
-        for i in range(len(user_todos)):
-            user_todo = user_todos[i]
+        for user_todo in user_todos:
             target_date = user_todo.target_date
             # 查詢本周所有任務
             if (target_date in this_week_days) and (today >= target_date):
@@ -32,7 +31,7 @@ def get_target_service(user_id):
 
 
 
-def update_target_times_service(user_id, target_date, data):
+def update_target_times_and_return(user_id, target_date, data):
     """
     :param str | None hand: training hand
     :param int part: training part
@@ -46,6 +45,7 @@ def update_target_times_service(user_id, target_date, data):
     should_be_updated_todo.actual_times = updated_actual_times
     __check_target_is_completed(should_be_updated_todo, updated_actual_times)
     target.save()
+    return should_be_updated_todo.to_json()
 
 
 def check_target_existed_service(user_id):

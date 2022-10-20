@@ -2,7 +2,7 @@ from flask import request, make_response
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
-from app.service.target_service import add_target_service, get_target_service, update_target_times_service, check_target_existed_service, check_target_isjuststarted_service, add_todo_service
+from app.service.target_service import add_target_service, get_target_service, update_target_times_and_return, check_target_existed_service, check_target_isjuststarted_service, add_todo_service
 from app.utils.backend_error import BackendException, UserTodoHasAlreadyCreateException
 from flasgger import swag_from
 from app.api.api_doc import target_get as get_doc
@@ -60,19 +60,18 @@ def get_target(user_id):
 @validate_token(check_inperson=True)
 def update_target(user_id, target_date):
     data = request.get_json()
-    message = ""
-    status = 200
     try:
-        update_target_times_service(user_id, target_date, data)
+        result = update_target_times_and_return(user_id, target_date, data)
         message = "更新訓練計劃表成功"
         logger.info(message)
+        return make_response({"message": message, "data": result}, 200)
     except Exception as e:
         match e.__class__.__name__:
             case _:
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message}, status)
+        return make_response({"message": message}, status)
 
 
 @api.route(f"{root_path}/existed/<user_id>", methods=['GET'])
