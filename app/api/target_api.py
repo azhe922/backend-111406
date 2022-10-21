@@ -113,16 +113,15 @@ def check_target_is_juststarted(user_id):
     return make_response({"message": message, "data": result}, status)
 
 
-@api.route(f"{root_path}/add/todo/<user_id>", methods=['POST'])
+@api.route(f"{root_path}/add/todo/<user_id>/<target_date>", methods=['PATCH'])
 @validate_token(check_inperson=True)
-def add_todo(user_id):
-    data = request.get_json()
-    message = ""
+def add_todo(user_id, target_date):
     status = 200
     try:
-        add_todo_service(user_id, data)
+        result = add_todo_service(user_id, target_date)
         message = "新增訓練任務成功"
         logger.info(message)
+        return make_response({"message": message, "data": result}, status)
     except Exception as e:
         match e.__class__.__name__:
             case UserTodoHasAlreadyCreateException.__name__:
@@ -131,4 +130,4 @@ def add_todo(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message}, status)
+        return make_response({"message": message}, status)

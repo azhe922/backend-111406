@@ -59,7 +59,10 @@ def check_target_isjuststarted_service(user_id):
     target = Target.objects(user_id=user_id, start_date__gt=today)
     return True if target else False
 
-def add_todo_service(user_id, todo_data):
+def add_todo_service(user_id, target_date):
+    todo_data = {
+      "target_date": target_date
+    }
     usertodo_json = dict_to_json(todo_data)
     to_add_usertodo = UserTodo.from_json(usertodo_json)
 
@@ -71,6 +74,7 @@ def add_todo_service(user_id, todo_data):
     else:
         target.user_todos.append(to_add_usertodo)
         target.save()
+        return to_add_usertodo.to_json()
 
 def get_last_and_iscompleted_target(user_id):
     now = get_now_timestamp()
