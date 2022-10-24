@@ -4,7 +4,6 @@ from datetime import datetime
 from app.model.record import Record
 from app.model.standard import Standard
 from app.utils.backend_util import dict_to_json, get_now_timestamp
-import time
 
 
 def add_record_service(record_data):
