@@ -1,5 +1,6 @@
 from flask import request, make_response
-from app.service.user_service import update_user_service_ethsum, user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service
+from http import HTTPStatus
+from app.service.user_service import update_user_service_ethsum, user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service, update_forget_pwd_service
 import logging
 from . import api
 from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
@@ -157,17 +158,16 @@ def update_user_eth(user_id):
 # 修改密碼
 
 
-@api.route(f"{root_path}/update/password/<user_id>", methods=['POST'])
+@api.route(f"{root_path}/update/password", methods=['POST'])
 @validate_token(check_inperson=True)
-def update_pwd(user_id):
+def update_pwd():
     data = request.get_json()
-    message = ""
-    status = 200
-    logger.info(f"{user_id} 修改密碼")
+    logger.info(f"{data['user_id']} 修改密碼")
     try:
-        update_pwd_service(data, user_id)
+        update_pwd_service(data)
         message = "更新成功"
         logger.info(message)
+        return make_response({"message": message}, HTTPStatus.OK)
     except Exception as e:
         match e.__class__.__name__:
             case PasswordIncorrectException.__name__:
@@ -176,26 +176,25 @@ def update_pwd(user_id):
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message}, status)
+        return make_response({"message": message}, status)
 
 # 忘記密碼修改
 
 
-@api.route(f"{root_path}/update/forget/password/<email>", methods=['POST'])
+@api.route(f"{root_path}/update/forget/password", methods=['POST'])
 @validate_change_forget_pwd_token
-def update_forget_pwd(email):
+def update_forget_pwd():
     data = request.get_json()
-    message = ""
-    status = 200
-    logger.info(f"{email} 修改密碼")
+    logger.info(f"{data['email']} 修改密碼")
     try:
-        update_pwd_service(data, email)
+        update_forget_pwd_service(data)
         message = "更新成功"
         logger.info(message)
+        return make_response({"message": message}, HTTPStatus.OK)
     except Exception as e:
         match e.__class__.__name__:
             case _:
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message}, status)
+        return make_response({"message": message}, status)
