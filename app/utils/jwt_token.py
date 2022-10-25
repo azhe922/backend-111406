@@ -76,8 +76,9 @@ def validate_change_forget_pwd_token(function):
                 raise TokenNotProvidedException()
             payload = decode(token, secret, algorithms=["HS256"])
             email = payload['email']
-
-            if email not in request.path:
+            
+            data = request.get_json()
+            if email not in data['email']:
                 raise AuthNotEnoughException()
 
             return function(*args, **kwargs)
