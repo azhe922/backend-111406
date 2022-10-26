@@ -51,6 +51,7 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
                     (body, status) = e.get_response_body()
                     return make_response(body, status)
             except Exception as e:
+                e.with_traceback()
                 match (e.__class__.__name__):
                     case AuthNotEnoughException.__name__ | TokenNotProvidedException.__name__:
                         pass
@@ -77,8 +78,8 @@ def validate_change_forget_pwd_token(function):
             payload = decode(token, secret, algorithms=["HS256"])
             email = payload['email']
 
-            data = request.get_json()
-            if email not in data.values():
+            body = request.get_json()
+            if email not in body.values():
                 raise AuthNotEnoughException()
 
             return function(*args, **kwargs)
@@ -105,9 +106,15 @@ def __check_inperson(payload, check_inperson):
     user_role = payload['role']
     user_id = payload['user_id']
     if user_role != UserRole.manager.value:
-        current_path = request.path
-        body = request.get_json()
-        # 是否為本人
-        if check_inperson:
-            if not (user_id in current_path or user_id in body.values()) and user_role < UserRole.doctor.value:
-                raise AuthNotEnoughException()
+        if request.method == "GET":
+            current_path = request.path
+            # 是否為本人
+            if check_inperson:
+                if user_id not in current_path and user_role < UserRole.doctor.value:
+                    raise AuthNotEnoughException()
+        else:            
+            body = request.get_json()
+            # 是否為本人
+            if check_inperson:
+                if user_id in body.values() and user_role < UserRole.doctor.value:
+                    raise AuthNotEnoughException()            
