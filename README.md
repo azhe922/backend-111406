@@ -33,7 +33,7 @@ source .venv/bin/activate
 email_username = "10846006@ntub.edu.tw"
 email_password = "zvgbvdgjrmjaackn"
 db_host = "mongodb+srv://backend:mtB5i2RUuWuSL2CK@cluster0.ftra1.mongodb.net/ntubapp"
-flask_config = "development"  //正式環境請設定為"production"
+flask_config = "development"  # 正式環境請設定為"production"
 token_secret = "ntubimdprojectbackend111406jwttokensecretkey"
 ```
 
@@ -46,7 +46,7 @@ token_secret = "ntubimdprojectbackend111406jwttokensecretkey"
     1. 切換目錄至專案根目錄
     2. 確認`application.py`內之DB連線字串
     3. 輸入`gcloud app deploy`, 接著輸入`Y`
-- gunicorn
+- gunicorn(in Linux)
     1. 切換目錄至專案根目錄
     2. 輸入`gunicorn --bind=0.0.0.0:8080 application:app`
     3. 至`http://localhost:8080/api/user`確認是否成功啟動

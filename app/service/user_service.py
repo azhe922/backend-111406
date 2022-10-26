@@ -103,24 +103,24 @@ def check_email_existed(email):
         raise NotFoundEmailException()
 
 
-def update_pwd_service(userdata, query_index):
+def update_pwd_service(userdata):
     update_time = get_now_timestamp()
-    if "email" in userdata.keys():
-        user = User.objects.get(email=query_index)
-        user.update_time = update_time
+    user = User.objects.get(user_id=userdata['user_id'])
+    if compare_passwords(userdata['old_password'], user.password):
         user.password = encrypt_password(
-            userdata['password']).decode("utf-8")
+            userdata['new_password']).decode("utf-8")
+        user.update_time = update_time
         user.save()
     else:
-        user = User.objects.get(user_id=query_index)
-        if compare_passwords(userdata['old_password'], user.password):
-            user.password = encrypt_password(
-                userdata['new_password']).decode("utf-8")
-            user.update_time = update_time
-            user.save()
-        else:
-            raise PasswordIncorrectException()
+        raise PasswordIncorrectException()
 
+def update_forget_pwd_service(userdata):
+    update_time = get_now_timestamp()
+    user = User.objects.get(email=userdata['email'])
+    user.update_time = update_time
+    user.password = encrypt_password(
+        userdata['password']).decode("utf-8")
+    user.save()
 
 def check_user_token(token):
     login_record = UserLoginRecord.objects(token=token)
