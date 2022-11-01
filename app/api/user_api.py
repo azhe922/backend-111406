@@ -62,28 +62,6 @@ def login():
         (message, status) = e.get_response_message()
         return make_response({"message": message}, status)
 
-# 查詢所有使用者
-
-
-@api.route(root_path, methods=['GET'])
-@validate_token(has_role=200)
-@swag_from(search_doc)
-def search_user():
-    """查詢所有使用者
-    需要管理者帳號才能使用
-    """
-    try:
-        result = search_user_service()
-        message = "查詢成功"
-        return make_response({"message": message, "data": result}, HTTPStatus.OK)
-    except Exception as e:
-        match e.__class__.__name__:
-            case _:
-                logger.error(str(e))
-                e = BackendException()
-        (message, status) = e.get_response_message()
-        return make_response({"message": message}, status)    
-
 # 依ID查詢使用者
 
 

@@ -1,4 +1,5 @@
 from flask import request, make_response
+from http import HTTPStatus
 from app.service.record_service import add_record_service, get_record_before_last_target, get_standard_times_service, search_records_by_userid
 from app.service.target_service import get_last_and_iscompleted_target, check_target_existed_service, check_target_isjuststarted_service
 import logging
@@ -49,20 +50,18 @@ def add_record():
 def search_record(user_id):
     """查詢使用者所有測試紀錄
     """
-    result = []
-    message = ""
-    status = 200
     try:
         result = search_records_by_userid(user_id)
         message = "查詢成功"
         logger.info(message)
+        return make_response({"message": message, "data": result}, HTTPStatus.OK)
     except Exception as e:
         match e.__class__.__name__:
             case _:
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message, "data": result}, status)
+        return make_response({"message": message}, status)
 
 # 測試結果數據分析
 
