@@ -6,7 +6,7 @@ from . import api
 from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
 from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException
 from flasgger import swag_from
-from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_search as search_doc, user_get as get_doc
+from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_get as get_doc
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
