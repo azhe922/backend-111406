@@ -48,3 +48,9 @@ def close_db():
 
 def get_now_timestamp():
     return int(time.time())
+
+def datetime_strf_YYYYmmddHHMMSS(time):
+    """
+    將datetime格式轉換為yyyy-mm-dd HH:MM:SS字串
+    """
+    return dt.fromtimestamp(time).strftime('%Y-%m-%d %H:%M:%S')
