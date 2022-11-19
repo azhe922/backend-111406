@@ -28,6 +28,7 @@ def user_signup_service(userdata):
 
 def user_login_service(userdata):
     user_id = userdata['user_id']
+    registration_token = userdata['registration_token']
     user_check = User.objects[:1](user_id=user_id)
     if not user_check:
         raise NotFoundUseridException()
@@ -42,9 +43,10 @@ def user_login_service(userdata):
                 login_record = login_record[0]
                 login_record.token = token
                 login_record.login_time = now
+                login_record.registration_token = registration_token
             else:
                 login_record = UserLoginRecord(
-                    user_id=user.user_id, token=token, login_time=now)
+                    user_id=user.user_id, token=token, login_time=now, registration_token=registration_token)
             login_record.save()
             return token
         else:
