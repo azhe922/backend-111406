@@ -94,3 +94,8 @@ class UserTodoHasAlreadyCreateException(BackendException):
     message = "今天已經做過訓練任務囉！如果需要多做訓練請等待至隔日再新增任務！"
     body = {"message": message}
     status = 500
+
+class NotFoundException(BackendException):
+    message = "查無該使用者資訊"
+    body = {"message": message}
+    status = 500
