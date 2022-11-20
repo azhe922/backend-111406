@@ -28,7 +28,7 @@ def user_signup_service(userdata):
 
 def user_login_service(userdata):
     user_id = userdata['user_id']
-    registration_token = userdata['registration_token']
+    registration_token = userdata.get('registration_token') or ''
     user_check = User.objects[:1](user_id=user_id)
     if not user_check:
         raise NotFoundUseridException()
