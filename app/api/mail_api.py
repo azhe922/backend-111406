@@ -1,4 +1,5 @@
 from flask import request, make_response
+from http import HTTPStatus
 from flask_mail import Message
 import logging
 from threading import Thread
@@ -36,6 +37,7 @@ def send_validcode_mail():
         status = 200
         message = "郵件發送成功"
         logger.info(message)
+        return make_response({"message": message}, HTTPStatus.OK)
     except Exception as e:
         match e.__class__.__name__:
             case NotFoundEmailException.__name__:
@@ -44,13 +46,12 @@ def send_validcode_mail():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message}, status)
+        return make_response({"message": message}, status)
 
 
 @api.route(f'{root_path}/validate', methods=["POST"])
 def validate():
     data = request.get_json()
-    token = ""
     try:
         (otp, token) = get_code(data['email'])
         if otp != data['otp']:
@@ -58,6 +59,9 @@ def validate():
         message = "驗證成功"
         status = 200
         logger.info(message)
+        response = make_response({"message": message}, HTTPStatus.OK)
+        response.headers['token'] = token
+        return response
     except Exception as e:
         match e.__class__.__name__:
             case IncorrectOtpException.__name__ | ExpiredOtpException.__name__ | OtherOtpException.__name__:
@@ -66,9 +70,7 @@ def validate():
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    response = make_response({"message": message}, status)
-    response.headers['token'] = token
-    return response
+        return make_response({"message": message}, status)
 
 
 def __send_async_email(app, valid_title, email, valid_body):

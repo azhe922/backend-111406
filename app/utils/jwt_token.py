@@ -51,7 +51,6 @@ def validate_token(original_function=None, *, has_role=None, check_inperson=None
                     (body, status) = e.get_response_body()
                     return make_response(body, status)
             except Exception as e:
-                e.with_traceback()
                 match (e.__class__.__name__):
                     case AuthNotEnoughException.__name__ | TokenNotProvidedException.__name__:
                         pass

@@ -1,4 +1,5 @@
 from mongoengine import Document, StringField, IntField
+from app.utils.backend_util import datetime_strf_YYYYmmddHHMMSS
 
 import json
 
@@ -10,4 +11,6 @@ class LogRecord(Document):
     action_time = IntField(required=True)
 
     def to_json(self, *args, **kwargs):
-        return json.loads(super().to_json(*args, **kwargs))
+        result = json.loads(super().to_json(*args, **kwargs))
+        result['action_time'] = datetime_strf_YYYYmmddHHMMSS(self.action_time)
+        return result

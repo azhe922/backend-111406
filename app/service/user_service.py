@@ -4,7 +4,7 @@ import time
 import datetime
 from app.utils.jwt_token import generate_token
 from app.utils.backend_util import dict_to_json, datetime_delta, datetime_strf, get_now_timestamp
-from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, LoginFailedException, PasswordIncorrectException
+from app.utils.backend_error import NotFoundEmailException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, LoginFailedException, PasswordIncorrectException, NotFoundException
 from app.model.user_loginrecord import UserLoginRecord
 from app.enums.user_role import UserRole
 from app.enums.deltatime_type import DeltaTimeType
@@ -28,6 +28,7 @@ def user_signup_service(userdata):
 
 def user_login_service(userdata):
     user_id = userdata['user_id']
+    registration_token = userdata.get('registration_token') or ''
     user_check = User.objects[:1](user_id=user_id)
     if not user_check:
         raise NotFoundUseridException()
@@ -42,9 +43,10 @@ def user_login_service(userdata):
                 login_record = login_record[0]
                 login_record.token = token
                 login_record.login_time = now
+                login_record.registration_token = registration_token
             else:
                 login_record = UserLoginRecord(
-                    user_id=user.user_id, token=token, login_time=now)
+                    user_id=user.user_id, token=token, login_time=now, registration_token=registration_token)
             login_record.save()
             return token
         else:
@@ -132,6 +134,13 @@ def check_user_token(token):
         login_record.login_time = get_now_timestamp()
         login_record.save()
         return new_token
+
+def clean_user_token(user_id):
+    login_record = UserLoginRecord.objects(user_id=user_id)
+    if login_record:
+        login_record.get().update(set__registration_token='')
+    else:
+        raise NotFoundException()
 
 
 def __get_token(user_id):

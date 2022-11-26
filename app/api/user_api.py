@@ -1,12 +1,12 @@
 from flask import request, make_response
 from http import HTTPStatus
-from app.service.user_service import update_user_service_ethsum, user_signup_service, search_user_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service, update_forget_pwd_service
+from app.service.user_service import update_user_service_ethsum, user_signup_service, getuser_by_id_service, user_login_service, update_user_service, update_pwd_service, update_forget_pwd_service, clean_user_token
 import logging
 from . import api
 from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
-from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException
+from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException, NotFoundException
 from flasgger import swag_from
-from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_search as search_doc, user_get as get_doc
+from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_get as get_doc
 
 root_path = "/user"
 logger = logging.getLogger(__name__)
@@ -61,28 +61,6 @@ def login():
                 e = BackendException()
         (message, status) = e.get_response_message()
         return make_response({"message": message}, status)
-
-# 查詢所有使用者
-
-
-@api.route(root_path, methods=['GET'])
-@validate_token(has_role=200)
-@swag_from(search_doc)
-def search_user():
-    """查詢所有使用者
-    需要管理者帳號才能使用
-    """
-    try:
-        result = search_user_service()
-        message = "查詢成功"
-        return make_response({"message": message, "data": result}, HTTPStatus.OK)
-    except Exception as e:
-        match e.__class__.__name__:
-            case _:
-                logger.error(str(e))
-                e = BackendException()
-        (message, status) = e.get_response_message()
-        return make_response({"message": message}, status)    
 
 # 依ID查詢使用者
 
@@ -184,6 +162,26 @@ def update_forget_pwd():
         return make_response({"message": message}, HTTPStatus.OK)
     except Exception as e:
         match e.__class__.__name__:
+            case _:
+                logger.error(str(e))
+                e = BackendException()
+        (message, status) = e.get_response_message()
+        return make_response({"message": message}, status)
+
+
+@api.route(f"{root_path}/logout/<user_id>", methods=['GET'])
+@validate_token(check_inperson=True)
+def logout(user_id):
+    logger.info(f"{user_id} 使用者登出")
+    try:
+        clean_user_token(user_id)
+        message = "登出成功"
+        logger.info(message)
+        return make_response({"message": message}, HTTPStatus.OK)
+    except Exception as e:
+        match e.__class__.__name__:
+            case NotFoundException.__name__:
+                pass
             case _:
                 logger.error(str(e))
                 e = BackendException()
