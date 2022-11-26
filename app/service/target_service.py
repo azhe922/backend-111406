@@ -35,10 +35,11 @@ def get_target_service(user_id):
 
 def update_target_times_and_return(user_id, target_date, data):
     """
+    there are the keys in data
     :param str | None hand: training hand
     :param int part: training part
     :param int times: training times
-    :param int fails: fail times
+    :param int fails: training fail times
     :param int spending_time: all spend time for training
     """
     target = __get_target_from_today(user_id).get()

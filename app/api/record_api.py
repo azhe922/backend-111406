@@ -18,10 +18,8 @@ logger = logging.getLogger(__name__)
 @api.route(root_path, methods=['POST'])
 @validate_token()
 def add_record():
-    data = request.get_json()
-    message = ""
-    status = 200
     try:
+        data = request.get_json()
         (analyze, has_record) = __analyze_record(data)
         data['pr'] = analyze['pr']
         data['test_result'] = analyze['test_result']
@@ -32,14 +30,15 @@ def add_record():
         data['difference'] = analyze['difference'] if has_record else None
         message = "新增紀錄成功"
         logger.info(message)
+        return make_response({"message": message, "data": data}, HTTPStatus.OK)
     except Exception as e:
-        data = {}
+        e.with_traceback()
         match e.__class__.__name__:
             case _:
                 logger.error(str(e))
                 e = BackendException()
         (message, status) = e.get_response_message()
-    return make_response({"message": message, "data": data}, status)
+        return make_response({"message": message, "data": {}}, status)
 
 # 查詢使用者所有測試紀錄
 
