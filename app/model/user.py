@@ -1,4 +1,4 @@
-from mongoengine import Document, StringField, EmailField, FloatField, IntField, EnumField
+from mongoengine import Document, StringField, EmailField, FloatField, IntField, EnumField, DictField
 
 from app.enums.user_role import UserRole
 from app.enums.gender import Gender
@@ -44,12 +44,12 @@ class User(Document):
     eth_password = StringField(max_length=100)
     eth_sum = IntField(min_value=0)
     institution = StringField()
-    other_detail = StringField()
+    other_detail = DictField()
     """ {
-        "isHadHypertension": boolean,
-        "isHadHyperglycemia": boolean,
-        "isHadHyperlipidemia": boolean,
-        "isHadExerciseHabits": boolean
+        "hasHypertension": boolean,
+        "hasHyperglycemia": boolean,
+        "hasHyperlipidemia": boolean,
+        "hasExerciseHabits": boolean
         }"""
 
     def to_json(self, *args, **kwargs):
