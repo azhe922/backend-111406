@@ -4,7 +4,7 @@ from app.service.user_service import update_user_service_ethsum, user_signup_ser
 import logging
 from . import api
 from app.utils.jwt_token import validate_token, validate_change_forget_pwd_token
-from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException, NotFoundException
+from app.utils.backend_error import LoginFailedException, BackendException, UserIdOrEmailAlreadyExistedException, NotFoundUseridException, PasswordIncorrectException, NotFoundException, InvalidEmailException
 from flasgger import swag_from
 from app.api.api_doc import user_signup as signup_doc, user_login as login_doc, user_get as get_doc
 
@@ -31,8 +31,12 @@ def signup():
             case UserIdOrEmailAlreadyExistedException.__name__:
                 pass
             case _:
-                logger.error(str(e))
-                e = BackendException()
+                err_message = str(e)
+                logger.error(err_message)
+                if 'email' in  err_message:
+                    e = InvalidEmailException()
+                else:
+                    e = BackendException()
         (message, status) = e.get_response_message()
         return make_response({"message": message}, status)
 

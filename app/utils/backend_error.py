@@ -99,3 +99,8 @@ class NotFoundException(BackendException):
     message = "查無該使用者資訊"
     body = {"message": message}
     status = 500
+
+class InvalidEmailException(BackendException):
+    message = "電子信箱格式錯誤"
+    body = {"message": message}
+    status = 500
