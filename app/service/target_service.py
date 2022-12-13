@@ -5,7 +5,7 @@ from datetime import datetime
 from app.enums.training_part import TrainingPart
 from app.utils.backend_error import UserTodoHasAlreadyCreateException
 from app.enums.deltatime_type import DeltaTimeType
-
+from app.model.default_target import DefaultTarget     
 
 def add_target_service(target_data):
     user_todos = __get_usertodos(target_data['start_date'])
@@ -14,6 +14,11 @@ def add_target_service(target_data):
     target = Target().from_json(target_json)
     target.create_time = get_now_timestamp()
     target.save()
+    default_target = DefaultTarget.objects(user_id=target.user_id, valid=True)
+    if default_target:
+        default_target = default_target.get()
+        default_target.valid = False
+        default_target.save()
 
 
 def get_target_service(user_id):
@@ -68,7 +73,11 @@ def add_todo_service(user_id, target_date):
         "target_date": target_date
     }
     usertodo_json = dict_to_json(todo_data)
-    to_add_usertodo = UserTodo.from_json(usertodo_json)
+    to_add_usertodo = UserTodo.from_json(usertodo_json)    
+    default_target = DefaultTarget.objects(user_id=user_id, valid=True)
+    if default_target:
+        default_target = default_target.get()
+        to_add_usertodo.target_times = default_target.target_times
 
     target = __get_target_from_today(user_id).get()
     user_todos = target.user_todos

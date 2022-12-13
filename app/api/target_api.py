@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 
 
 @api.route(root_path, methods=['POST'])
-@validate_token()
+@validate_token(check_inperson=True)
 def add_target():
     data = request.get_json()
     try:

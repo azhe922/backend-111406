@@ -115,5 +115,5 @@ def __check_inperson(payload, check_inperson):
             body = request.get_json()
             # 是否為本人
             if check_inperson:
-                if user_id in body.values() and user_role < UserRole.doctor.value:
+                if user_id not in body.values() and user_role < UserRole.doctor.value:
                     raise AuthNotEnoughException()            
