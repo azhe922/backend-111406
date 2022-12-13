@@ -3,7 +3,7 @@ from http import HTTPStatus
 import logging
 from . import api
 from app.utils.jwt_token import validate_token
-from app.service.target_service import add_target_service, get_target_service, update_target_times_and_return, check_target_existed_service, check_target_isjuststarted_service, add_todo_service
+from app.service.target_service import add_target_service, get_target_service, update_actual_times_and_return, check_target_existed_service, check_target_isjuststarted_service, add_todo_service
 from app.utils.backend_error import BackendException, UserTodoHasAlreadyCreateException
 from flasgger import swag_from
 from app.api.api_doc import target_get as get_doc
@@ -59,7 +59,7 @@ def get_target(user_id):
 def update_target(user_id, target_date):
     data = request.get_json()
     try:
-        result = update_target_times_and_return(user_id, target_date, data)
+        result = update_actual_times_and_return(user_id, target_date, data)
         message = "更新訓練計劃表成功"
         logger.info(message)
         return make_response({"message": message, "data": result}, HTTPStatus.OK)

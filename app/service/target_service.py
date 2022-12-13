@@ -33,7 +33,7 @@ def get_target_service(user_id):
     return result
 
 
-def update_target_times_and_return(user_id, target_date, data):
+def update_actual_times_and_return(user_id, target_date, data):
     """
     there are the keys in data
     :param str | None hand: training hand
