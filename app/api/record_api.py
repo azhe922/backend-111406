@@ -32,7 +32,6 @@ def add_record():
         logger.info(message)
         return make_response({"message": message, "data": data}, HTTPStatus.OK)
     except Exception as e:
-        e.with_traceback()
         match e.__class__.__name__:
             case _:
                 logger.error(str(e))

@@ -105,15 +105,15 @@ def __check_inperson(payload, check_inperson):
     user_role = payload['role']
     user_id = payload['user_id']
     if user_role != UserRole.manager.value:
+        current_path = request.path
         if request.method == "GET":
-            current_path = request.path
             # 是否為本人
             if check_inperson:
                 if user_id not in current_path and user_role < UserRole.doctor.value:
                     raise AuthNotEnoughException()
-        else:            
+        else:
             body = request.get_json()
             # 是否為本人
             if check_inperson:
-                if user_id not in body.values() and user_role < UserRole.doctor.value:
+                if not (user_id in body.values() or user_id in current_path) and user_role < UserRole.doctor.value:
                     raise AuthNotEnoughException()            
