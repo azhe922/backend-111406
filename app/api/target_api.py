@@ -107,10 +107,13 @@ def check_target_is_juststarted(user_id):
         return make_response({"message": message}, status)
 
 
-@api.route(f"{root_path}/add/todo/<user_id>/<target_date>", methods=['PATCH'])
+@api.route(f"{root_path}/add/todo", methods=['POST'])
 @validate_token(check_inperson=True)
-def add_todo(user_id, target_date):
+def add_todo():
     try:
+        data = request.get_json()
+        user_id = data['user_id']
+        target_date = data['target_date']
         result = add_todo_service(user_id, target_date)
         message = "新增訓練任務成功"
         logger.info(message)
